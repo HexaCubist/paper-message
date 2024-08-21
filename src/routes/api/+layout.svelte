@@ -1,10 +1,19 @@
 <script lang="ts">
+	import type { LayoutData } from './$types';
 	import '../../app.postcss';
-	let { children } = $props();
+	let { children, data } = $props();
 	
 
-	let pages = 2;
-	let currentPage = 0;
+
+	let stockPages = 1; // Home and QR
+	let pages = stockPages + data.messages.length
+	let currentPage = data.page || 0;
+	const time = new Date().toLocaleString('en-NZ', {
+		hour: 'numeric',
+		minute: 'numeric',
+		second: 'numeric',
+		hour12: false
+	})
 
 	import QRCode from 'qrcode'
 	const qr = QRCode.toDataURL('https://paper.zac.nz/', {
@@ -21,31 +30,23 @@
 	<div class="col bg-black text-white w-[30px] shrink-0 h-full rounded p-[2px] flex flex-col">
 		<div class="grow py-[5px] relative mx-auto text-sm">
 				<!-- Sidebar scroller -->
-				<div class="w-[10px] text-center bg-white h-full rounded-full relative">
-					<div style:width="calc(100% - 2px)" class="bg-black left-0 right-0 mx-auto rounded-full absolute transition"
-					style:height="calc({(1 / pages) * 100}% - 4px)"
-					style:top="calc({(currentPage / pages) * 100}% + 2px)"
+				<div class="w-[10px] text-center bg-white h-full rounded-full relative overflow-clip">
+					<div style:width="calc(100% - 2px)" class="bg-black left-0 right-0 mx-auto rounded-full absolute transition leading-none flex items-center text-center justify-center"
+					style:height="calc({(1 / (pages-1)) * 100}% - 4px)"
+					style:top="calc({(currentPage / (pages-1)) * 100}% + 2px)"
 					>
 					{currentPage + 1}
 				</div>
 				</div>
-				<!-- Number Indicator -->
-				 <!-- The indicator should be at the center of the scrollbar vetically. We can achieve this simply by using a flex and aligning the text to the center. -->
-				<div class="text-sm absolute w-auto flex items-center justify-center left-0 right-0 mx-auto hidden" style:top={
-					`calc(${(currentPage / pages) * 100}% + 5px)`
-				}
-				style:height="calc((100% / {pages}) - 10px)"
-				>
-				<span class="bg-black w-[12px] h-[12px] text-center">
-					{currentPage+1}
-				</span>
-				</div>
 		</div>
 		{#await qr then src}
-			<img src={src} alt="QR Code" />
+			<img class="mx-auto" src={src} alt="QR Code" width="25px" height="25px" />
 		{/await}
 	</div>
-	<div class="col grow">
+	<div class="col grow overflow-hidden relative p-[2px]">
+		<div class="header absolute flex gap-[2px] text-sm justify-end w-full right-[2px]">
+			{time}
+		</div>
 		{@render children()}
 	</div>
 </div>
@@ -54,9 +55,8 @@
 
 <style lang="postcss">
 	:global(body) {
-		@apply bg-gray-100 text-black relative block origin-top-left;
+		@apply bg-white text-black relative block origin-top-left;
 		width: 296px;
 		height: 128px;
-		transform: scale(2);
 	}
 	</style>
