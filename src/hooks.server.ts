@@ -8,6 +8,7 @@ async function transformPageChunk({ html }: { html: string }) {
     html,
     encoding: "binary",
     transparent: false,
+    // puppeteerArgs: {
   });
   return image as Buffer;
 }

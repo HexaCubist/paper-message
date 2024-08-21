@@ -27,10 +27,10 @@
 </script>
 
 <div class="flex gap-[2px] h-full overflow-hidden">
-	<div class="col bg-black text-white w-[30px] shrink-0 h-full rounded p-[2px] flex flex-col">
+	<div class="col bg-black text-white w-[29px] shrink-0 h-full rounded p-[2px] flex flex-col">
 		<div class="grow py-[5px] relative mx-auto text-sm">
 				<!-- Sidebar scroller -->
-				<div class="w-[10px] text-center bg-white h-full rounded-full relative overflow-clip">
+				<div class="w-[9px] text-center bg-white h-full rounded-full relative overflow-clip">
 					<div style:width="calc(100% - 2px)" class="bg-black left-0 right-0 mx-auto rounded-full absolute transition leading-none flex items-center text-center justify-center"
 					style:height="calc({(1 / (pages-1)) * 100}% - 4px)"
 					style:top="calc({(currentPage / (pages-1)) * 100}% + 2px)"
