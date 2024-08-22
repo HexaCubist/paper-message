@@ -14,7 +14,10 @@ async function transformPageChunk({ html }: { html: string }) {
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
-  if (event.url.pathname.startsWith("/api")) {
+  if (
+    event.url.pathname.startsWith("/api") &&
+    !event.url.searchParams.has("live")
+  ) {
     const res = await resolve(event);
     if (res.status !== 200) {
       return res;

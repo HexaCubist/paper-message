@@ -1,5 +1,8 @@
 <script lang="ts">
+  import Preview from "$lib/components/preview/preview.svelte";
+
   const { data } = $props();
 </script>
 
-<div>Hey!</div>
+<!-- Preview box -->
+<Preview></Preview>

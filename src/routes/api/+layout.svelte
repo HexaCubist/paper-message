@@ -8,12 +8,18 @@
 	let stockPages = 1; // Home and QR
 	let pages = stockPages + data.messages.length
 	let currentPage = data.page || 0;
-	const time = new Date().toLocaleString('en-NZ', {
+	const setTime = () => {
+		return new Date().toLocaleString('en-NZ', {
 		hour: 'numeric',
 		minute: 'numeric',
 		second: 'numeric',
 		hour12: false
 	})
+	}
+	let time = $state(setTime());
+	setInterval(() => {
+		time = setTime();
+	}, 1000);
 
 	import QRCode from 'qrcode'
 	const qr = QRCode.toDataURL('https://paper.zac.nz/', {
@@ -39,9 +45,11 @@
 				</div>
 				</div>
 		</div>
+		<div class="qrHolder w-[25px] h-[25px]">
 		{#await qr then src}
-			<img class="mx-auto" src={src} alt="QR Code" width="25px" height="25px" />
+			<img class="mx-auto w-full h-full" src={src} alt="QR Code"  />
 		{/await}
+		</div>
 	</div>
 	<div class="col grow overflow-hidden relative p-[2px]">
 		<div class="header absolute flex gap-[2px] text-sm justify-end w-full right-[2px]">
