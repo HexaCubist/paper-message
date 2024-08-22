@@ -20,16 +20,6 @@
 	setInterval(() => {
 		time = setTime();
 	}, 1000);
-
-	import QRCode from 'qrcode'
-	const qr = QRCode.toDataURL('https://paper.zac.nz/', {
-		errorCorrectionLevel: "L",
-		margin: 0,
-		color: {
-			dark: "#ffffff",
-			light: "#000000"
-		}
-	})
 </script>
 
 <div class="flex gap-[2px] h-full overflow-hidden">
@@ -38,17 +28,15 @@
 				<!-- Sidebar scroller -->
 				<div class="w-[9px] text-center bg-white h-full rounded-full relative overflow-clip">
 					<div style:width="calc(100% - 2px)" class="bg-black left-0 right-0 mx-auto rounded-full absolute transition leading-none flex items-center text-center justify-center"
-					style:height="calc({(1 / (pages-1)) * 100}% - 4px)"
-					style:top="calc({(currentPage / (pages-1)) * 100}% + 2px)"
+					style:height="calc({(1 / (pages)) * 100}% - 4px)"
+					style:top="calc({(currentPage / (pages)) * 100}% + 2px)"
 					>
 					{currentPage + 1}
 				</div>
 				</div>
 		</div>
 		<div class="qrHolder w-[25px] h-[25px]">
-		{#await qr then src}
-			<img class="mx-auto w-full h-full" src={src} alt="QR Code"  />
-		{/await}
+			<img class="mx-auto w-full h-full" src={data.qr} alt="QR Code"  />
 		</div>
 	</div>
 	<div class="col grow overflow-hidden relative p-[2px]">

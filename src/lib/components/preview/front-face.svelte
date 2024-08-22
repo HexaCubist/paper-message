@@ -1,18 +1,28 @@
 <script lang="ts">
-  import { tick } from "svelte";
+  import { fade } from "svelte/transition";
+  import type { userDataType } from "../../../routes/api/[user]/+server";
+
+  import church from "./img/church.png";
 
   let {
     page = $bindable(0),
     live = $bindable(true),
-    previewData = false,
-  }: { page: number; live: boolean; previewData?: any } = $props();
+    previewData = $bindable(false),
+    userData,
+  }: {
+    page: number;
+    live: boolean;
+    previewData?: any;
+    userData: userDataType;
+  } = $props();
 
   const patternSize = 50;
   let boxSize: undefined | ResizeObserverEntry["contentBoxSize"] = $state();
   let width = $derived(boxSize ? boxSize[0].inlineSize : undefined);
-  let ratio = $derived(width ? width / (296 + 4) : undefined);
+  let ratio = $derived(width ? width / 296 : undefined);
 
   let changing = $state(false);
+  let previewing = $derived(previewData.message);
 
   const changePage = async (newPage: number) => {
     if (changing) return;
@@ -20,18 +30,23 @@
     setTimeout(() => {
       page = newPage;
     }, 250);
-    setTimeout(() => {
-      changing = false;
-    }, 500);
+    if (previewing || live)
+      setTimeout(() => {
+        changing = false;
+      }, 500);
   };
 </script>
 
 <div class="frame">
   <button
-    class="block"
+    title={previewing ? "Preview is active" : "Click to change page"}
+    class="outer-interact"
+    class:previewing
+    class:changing
     onclick={() => {
-      changePage((page + 1) % 2);
+      changePage((page + 1) % userData.total_pages);
     }}
+    disabled={changing || previewing}
   >
     <svg
       class="overflow-visible"
@@ -53,7 +68,7 @@
             y="0"
             width={patternSize}
             height={patternSize}
-            href="https://transparenttextures.com/patterns/church.png"
+            href={church}
           ></image></pattern
         >
       </defs>
@@ -85,17 +100,25 @@
             class:changing
             style:filter="contrast(0.7) brightness(1.25)"
           >
-            {#if previewData}
-              <iframe
-                src="/api/0/1?preview={JSON.stringify(previewData)}"
-                style:transform="scale({ratio})"
-              ></iframe>
+            {#if previewing}
+              {#key JSON.stringify(previewData)}
+                <iframe
+                  transition:fade
+                  class="col-start-1 row-start-1"
+                  src="/api/0/pages/1?live&preview={encodeURIComponent(
+                    JSON.stringify(previewData)
+                  )}"
+                  style:transform="scale({ratio})"
+                ></iframe>
+              {/key}
             {:else if live}
-              <iframe src="/api/0/{page}?live" style:transform="scale({ratio})"
+              <iframe
+                src="/api/0/pages/{page}?live"
+                style:transform="scale({ratio})"
               ></iframe>
             {:else}
               <img
-                src="/api/0/{page}"
+                src="/api/0/pages/{page}"
                 class="image-preview"
                 width="263.05664"
                 onload={() => {
@@ -108,11 +131,26 @@
       </g>
     </svg>
   </button>
-  <div class="form-control float-right">
+  <div class="form-control flex-row justify-end items-center mt-1">
     <label class="label cursor-pointer gap-2">
-      <input type="checkbox" class="toggle toggle-xs" bind:checked={live} />
+      <input
+        type="checkbox"
+        class="toggle toggle-xs"
+        bind:checked={live}
+        disabled={previewing}
+      />
       <span class="label-text text-sm">Live mode</span>
     </label>
+    {#if previewing}
+      <button
+        class="btn btn-xs shrink !w-auto btn-primary"
+        onclick={() => {
+          previewData.message = "";
+        }}
+      >
+        Reset Preview
+      </button>
+    {/if}
   </div>
 </div>
 
@@ -121,13 +159,16 @@
     @apply w-full mx-auto;
     max-width: calc(296px * 2);
   }
-  button {
+  .outer-interact {
     @apply w-full block cursor-pointer transition;
     @apply hover:opacity-90 hover:scale-95;
+    &:disabled {
+      @apply cursor-not-allowed hover:opacity-100 hover:scale-100;
+    }
   }
   .inner-frame {
-    @apply flex items-center w-full bg-white bg-repeat contain-inline-size transition;
-    background-image: url("https://transparenttextures.com/patterns/cardboard-flat.png");
+    @apply grid h-full grid-cols-1 grid-rows-1 items-center w-full bg-white bg-repeat contain-inline-size transition justify-center justify-items-center;
+    background-image: url("img/cardboard-flat.png");
     background-size: 100px;
     box-shadow:
       inset 0 0 0.3rem 1px #30303066,
@@ -138,28 +179,41 @@
     }
   }
   .outer-frame {
-    @apply drop-shadow-lg;
+    @apply drop-shadow-lg transition duration-500;
     fill: url(#pattern0);
   }
 
-  .pattern {
+  #pattern0 {
     path {
-      @apply fill-zinc-900;
+      @apply fill-zinc-900 transition-all duration-700;
     }
     image {
-      @apply opacity-30;
+      @apply opacity-30 transition-all duration-700;
     }
   }
-
   iframe {
-    @apply w-auto h-auto mix-blend-multiply origin-left pointer-events-none;
-    width: auto;
-    height: auto;
+    @apply w-auto h-auto mix-blend-multiply pointer-events-none;
+    width: 296px;
+    height: 128px;
     border: none;
     aspect-ratio: 296 / 128;
   }
   .image-preview {
     @apply mix-blend-multiply;
     image-rendering: pixelated;
+  }
+
+  .previewing {
+    #pattern0 {
+      path {
+        @apply fill-slate-800;
+      }
+      image {
+        @apply opacity-40;
+      }
+    }
+    .outer-frame {
+      filter: drop-shadow(0 4px 6px #00228899);
+    }
   }
 </style>

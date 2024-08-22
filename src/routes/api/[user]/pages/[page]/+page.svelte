@@ -1,16 +1,23 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
+  import { page } from "$app/stores";
 
   let { data } = $props();
-  let messageData = $state(data.messages[data.page]);
-  if (browser) {
-    // Search param is "preview" and if set should override the message data
-    const url = new URL(location.href);
+  let messageData = $state(data.messages[data.page - 1]);
+  $inspect(messageData);
+  // if (browser) {
+  // Search param is "preview" and if set should override the message data
+  const updateMessage = () => {
+    const url = new URL($page.url);
     const preview = url.searchParams.get("preview");
     if (preview) {
       messageData = JSON.parse(preview);
     }
-  }
+  };
+  $effect(() => {
+    $page.url;
+    updateMessage();
+  });
+  updateMessage();
 </script>
 
 <div class="h-full flex flex-col justify-center">
@@ -18,7 +25,7 @@
     <h1 class="daydream">{messageData.from} writes...</h1>
 
     <p class="text-sm">
-      {messageData.text}
+      {messageData.message}
     </p>
   {:else}
     <h1 class="text-center">Message Deleted 💔</h1>

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import '../../app.postcss';
-	let { children } = $props();
+	let { children, data } = $props();
+
+	const showSidebar = false;
 </script>
 
 <div class="pageLayout">
@@ -9,11 +11,13 @@
 		<a class="btn btn-ghost text-lg">Paper Messages</a>
 	</div>
 	<div class="flex flex-wrap mt-4 gap-4">
+		{#if showSidebar}
 		<div class="sidebar w-full max-w-xs lg:max-w-sm col-span-1 bg-base-100 text-base-content card card-bordered border-black">
 			<div class="card-body">
 				<h1 class="text-lg font-semibold">Recent Messages</h1>
 			</div>
 		</div>
+		{/if}
 		<div class="grow min-w-64">
 			{@render children()}
 			</div>

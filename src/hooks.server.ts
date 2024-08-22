@@ -13,9 +13,39 @@ async function transformPageChunk({ html }: { html: string }) {
   return image as Buffer;
 }
 
+export interface messageDataType {
+  message: string;
+  from: string;
+  page?: number;
+  date?: string;
+}
+
+const messages: messageDataType[] = [
+  {
+    message: "Hello, world!",
+    from: "SvelteKit",
+    page: 1,
+    date: new Date().toISOString(),
+  },
+  {
+    message: "Message 2",
+    from: "Sender 2",
+    page: 2,
+    date: new Date().toISOString(),
+  },
+  {
+    message: "Message 3",
+    from: "The Third Sender",
+    page: 3,
+    date: new Date().toISOString(),
+  },
+];
+
 export const handle: Handle = async ({ event, resolve }) => {
+  event.locals.messages = messages;
+  event.locals.userID = "12345";
   if (
-    event.url.pathname.startsWith("/api") &&
+    /^\/?api\/[^\/]+\/pages\/\d/.test(event.url.pathname) &&
     !event.url.searchParams.has("live")
   ) {
     const res = await resolve(event);
