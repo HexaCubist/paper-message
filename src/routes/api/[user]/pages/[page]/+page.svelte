@@ -3,7 +3,6 @@
 
   let { data } = $props();
   let messageData = $state(data.messages[data.page - 1]);
-  $inspect(messageData);
   // if (browser) {
   // Search param is "preview" and if set should override the message data
   const updateMessage = () => {

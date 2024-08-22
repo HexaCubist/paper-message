@@ -8,6 +8,7 @@ declare global {
     interface Locals {
       messages: messageDataType[];
       userID: string;
+      nextTime: number;
     }
     // interface PageData {}
     // interface PageState {}

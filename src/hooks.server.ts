@@ -44,6 +44,7 @@ const messages: messageDataType[] = [
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.messages = messages;
   event.locals.userID = "12345";
+  event.locals.nextTime = Date.now() + 5000;
   if (
     /^\/?api\/[^\/]+\/pages\/\d/.test(event.url.pathname) &&
     !event.url.searchParams.has("live")
