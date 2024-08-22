@@ -4,7 +4,8 @@
   let {
     page = $bindable(0),
     live = $bindable(true),
-  }: { page: number; live: boolean } = $props();
+    previewData = false,
+  }: { page: number; live: boolean; previewData?: any } = $props();
 
   const patternSize = 50;
   let boxSize: undefined | ResizeObserverEntry["contentBoxSize"] = $state();
@@ -84,7 +85,12 @@
             class:changing
             style:filter="contrast(0.7) brightness(1.25)"
           >
-            {#if live}
+            {#if previewData}
+              <iframe
+                src="/api/0/1?preview={JSON.stringify(previewData)}"
+                style:transform="scale({ratio})"
+              ></iframe>
+            {:else if live}
               <iframe src="/api/0/{page}?live" style:transform="scale({ratio})"
               ></iframe>
             {:else}
@@ -92,6 +98,9 @@
                 src="/api/0/{page}"
                 class="image-preview"
                 width="263.05664"
+                onload={() => {
+                  changing = false;
+                }}
               />
             {/if}
           </div>
@@ -110,14 +119,14 @@
 <style lang="postcss">
   .frame {
     @apply w-full mx-auto;
-    max-width: calc(296px * 1.5);
+    max-width: calc(296px * 2);
   }
   button {
     @apply w-full block cursor-pointer transition;
     @apply hover:opacity-90 hover:scale-95;
   }
   .inner-frame {
-    @apply flex items-center h-full w-full bg-white bg-repeat contain-inline-size transition;
+    @apply flex items-center w-full bg-white bg-repeat contain-inline-size transition;
     background-image: url("https://transparenttextures.com/patterns/cardboard-flat.png");
     background-size: 100px;
     box-shadow:
@@ -135,7 +144,7 @@
 
   .pattern {
     path {
-      @apply fill-slate-900;
+      @apply fill-zinc-900;
     }
     image {
       @apply opacity-30;

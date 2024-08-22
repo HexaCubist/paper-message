@@ -14,7 +14,7 @@
 				<h1 class="text-lg font-semibold">Recent Messages</h1>
 			</div>
 		</div>
-		<div class="grow min-w-64 border">
+		<div class="grow min-w-64">
 			{@render children()}
 			</div>
 	</div>
