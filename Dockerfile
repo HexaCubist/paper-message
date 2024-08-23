@@ -1,5 +1,7 @@
 FROM node:20.17.0 AS build
 
+RUN corepack enable
+
 WORKDIR /usr/src/app
 COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml", "yarn.lock", "./"]
 RUN yarn
