@@ -12,7 +12,12 @@
   }: {
     page: number;
     live: boolean;
-    previewData?: any;
+    previewData?:
+      | {
+          author: string;
+          message: string;
+        }
+      | false;
     userData: userDataType;
   } = $props();
 
@@ -22,7 +27,7 @@
   let ratio = $derived(width ? width / 296 : undefined);
 
   let changing = $state(false);
-  let previewing = $derived(previewData.message);
+  let previewing = $derived(previewData !== false && previewData.message);
 
   const changePage = async (newPage: number) => {
     if (changing) return;
@@ -100,7 +105,7 @@
             class:changing
             style:filter="contrast(0.7) brightness(1.25)"
           >
-            {#if previewing}
+            {#if previewing && previewData}
               {#key JSON.stringify(previewData)}
                 <iframe
                   transition:fade
@@ -109,18 +114,21 @@
                     JSON.stringify(previewData)
                   )}"
                   style:transform="scale({ratio})"
+                  title="Preview"
                 ></iframe>
               {/key}
             {:else if live}
               <iframe
                 src="/api/0/pages/{page}?live"
                 style:transform="scale({ratio})"
+                title="Live"
               ></iframe>
             {:else}
               <img
                 src="/api/0/pages/{page}"
                 class="image-preview"
                 width="263.05664"
+                alt="Page {page}"
                 onload={() => {
                   changing = false;
                 }}
@@ -145,7 +153,7 @@
       <button
         class="btn btn-xs shrink !w-auto btn-primary"
         onclick={() => {
-          previewData.message = "";
+          if (previewData) previewData.message = "";
         }}
       >
         Reset Preview

@@ -4,11 +4,12 @@
   import type { messageDataType } from "../../hooks.server.js";
   import moment from "moment";
   import { env } from "$env/dynamic/public";
+  import { Role } from "../../hookTypes.js";
 
   const { data } = $props();
 
-  let previewData = $state<messageDataType>({
-    from: "John Doe",
+  let previewData = $state({
+    author: data.account?.name!,
     message: "",
   });
 
@@ -59,7 +60,7 @@
   <form
     onsubmit={async (e) => {
       e.preventDefault();
-      if (!canSend) return false;
+      if (!canSend && data.role !== Role.Admin) return false;
       sending = true;
       await fetch(`/api/${data.user.userID}/post`, {
         method: "POST",
@@ -69,6 +70,7 @@
         body: JSON.stringify(previewData),
       });
       sending = false;
+      window.location.reload();
       return false;
     }}
   >
@@ -77,12 +79,12 @@
       placeholder="Your message here..."
       bind:value={liveText}
       onkeyup={(e) => updateText(e)}
-      disabled={sending || !canSend}
+      disabled={sending || !(canSend || data.role === Role.Admin)}
       maxlength="340"
       required
     ></textarea>
 
-    {#if !canSend}
+    {#if !canSend && timeTill}
       <progress
         class="progress mt-2"
         value={parseInt(env.PUBLIC_TIME_INTERVAL) - timeTill}
@@ -92,12 +94,12 @@
     <button
       type="submit"
       class="btn btn-primary mt-2 transition"
-      disabled={sending || !canSend}
+      disabled={sending || !(canSend || data.role === Role.Admin)}
     >
       {#if sending}
         Sending...
       {:else if canSend}
-        Send
+        Send (once {moment.duration(env.PUBLIC_TIME_INTERVAL).humanize()})
       {:else}
         You can send in {timeTillLabel}
         {#if timeTill < 60 * 60 * 1000}
@@ -110,4 +112,79 @@
       {/if}
     </button>
   </form>
+  {#if data.role === Role.Admin}
+    <!-- Admin section -->
+    <div class="card mt-10">
+      <div
+        class="card bg-base-100 w-full shadow-xl card-bordered border-red-700 border-2"
+      >
+        <div class="card-body">
+          <h2 class="card-title">Admin Mode!</h2>
+          {#if data.messages}
+            <div class="overflow-x-auto">
+              <table class="table">
+                <!-- head -->
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>Message</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {#each data.messages as message}
+                    <tr>
+                      <td title={moment(message.createdAt).format()}
+                        >{moment(message.createdAt).fromNow()}</td
+                      >
+                      <td>{message.author?.name}</td>
+                      <td>{message.message}</td>
+                      <td>
+                        <button
+                          class="btn btn-error"
+                          onclick={async () => {
+                            if (
+                              !confirm(
+                                `Are you sure you want to delete ${message.author?.name}'s message?`
+                              )
+                            )
+                              return;
+                            await fetch(`/api/admin/${message.id}`, {
+                              method: "DELETE",
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                            });
+                            window.location.reload();
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>{/each}
+                </tbody>
+              </table>
+            </div>
+          {/if}
+          <button
+            class="btn btn-error mt-2"
+            onclick={async () => {
+              if (!confirm("Are you sure you want to clear all messages?"))
+                return;
+              await fetch(`/api/admin/delete`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+              window.location.reload();
+            }}
+          >
+            Clear ALL Messages
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
 </label>

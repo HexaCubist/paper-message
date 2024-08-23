@@ -1,4 +1,4 @@
-import type { messageDataType } from "./hooks.server";
+import type { messageDataType, Role } from "./hooks.server";
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -9,6 +9,7 @@ declare global {
       messages: messageDataType[];
       userID: string;
       nextTime: number;
+      role: Role;
     }
     // interface PageData {}
     // interface PageState {}

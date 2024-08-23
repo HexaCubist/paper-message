@@ -16,7 +16,7 @@ export const load: LayoutServerLoad = async ({
     messageCount: locals.messages.length.toString(),
   });
   return {
-    page: parseInt(page),
+    page: parseInt(page!),
     messages: locals.messages,
     qr: await QRCode.toDataURL("https://paper.zac.nz/", {
       errorCorrectionLevel: "L",

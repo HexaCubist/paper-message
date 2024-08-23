@@ -27,7 +27,7 @@
 		<div class="grow py-[5px] relative mx-auto text-sm">
 				<!-- Sidebar scroller -->
 				<div class="w-[9px] text-center bg-white h-full rounded-full relative overflow-clip">
-					<div style:width="calc(100% - 2px)" class="bg-black left-0 right-0 mx-auto rounded-full absolute transition leading-none flex items-center text-center justify-center"
+					<div style:width="calc(100% - 2px)" class="bg-black left-0 right-0 mx-auto rounded-full absolute transition leading-none flex items-center text-center justify-center numberShadow"
 					style:height="calc({(1 / (pages)) * 100}% - 4px)"
 					style:top="calc({(currentPage / (pages)) * 100}% + 2px)"
 					>
@@ -54,5 +54,11 @@
 		@apply bg-white text-black relative block origin-top-left;
 		width: 296px;
 		height: 128px;
+	}
+	.numberShadow {
+		text-shadow: 0 1px 1px black,
+								0 -1px 1px black,
+								1px 0 1px black,
+								-1px 0 1px black;
 	}
 	</style>

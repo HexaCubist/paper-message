@@ -8,7 +8,25 @@
 <div class="pageLayout">
 
 	<div class="navbar bg-base-100 text-base-content border border-black rounded-box">
-		<a class="btn btn-ghost text-lg">Paper Messages</a>
+		<div class="flex-1">
+			<a href="/" class="btn btn-ghost text-lg">Paper Messages</a>
+		</div>
+		<div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+        <div class="w-10 rounded-full">
+          <img
+            alt={data.account?.name}
+            src={data.account?.image} />
+        </div>
+      </div>
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+      <ul
+        tabindex="0"
+        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow text-sm">
+        <li><a href="/auth/signout">Logout</a></li>
+      </ul>
+    </div>
+
 	</div>
 	<div class="flex flex-wrap mt-4 gap-4">
 		{#if showSidebar}

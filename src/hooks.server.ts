@@ -1,7 +1,13 @@
-import type { Handle } from "@sveltejs/kit";
+import { redirect, type Handle } from "@sveltejs/kit";
 import nodeHtmlToImage from "node-html-to-image";
 import Jimp from "jimp";
 import { encode } from "bmp-ts";
+import { sequence } from "@sveltejs/kit/hooks";
+import { handle as authenticationHandle } from "./auth";
+import { getMessages, getUser, getUserFromEmail } from "./db/dbClient";
+import { env as privateEnv } from "$env/dynamic/private";
+import { env as publicEnv } from "$env/dynamic/public";
+import { Role } from "./hookTypes";
 
 async function transformPageChunk({ html }: { html: string }) {
   const image = await nodeHtmlToImage({
@@ -13,38 +19,28 @@ async function transformPageChunk({ html }: { html: string }) {
   return image as Buffer;
 }
 
-export interface messageDataType {
-  message: string;
-  from: string;
-  page?: number;
-  date?: string;
-}
+export type messageDataType = NonNullable<
+  Awaited<ReturnType<typeof getMessages>>
+>[0];
 
-const messages: messageDataType[] = [
-  {
-    message: "Hello, world!",
-    from: "SvelteKit",
-    page: 1,
-    date: new Date().toISOString(),
-  },
-  {
-    message: "Message 2",
-    from: "Sender 2",
-    page: 2,
-    date: new Date().toISOString(),
-  },
-  {
-    message: "Message 3",
-    from: "The Third Sender",
-    page: 3,
-    date: new Date().toISOString(),
-  },
-];
+const authorizationHandle: Handle = async ({ event, resolve }) => {
+  // Protect all routes except /api and /auth
+  if (
+    !event.url.pathname.startsWith("/auth") &&
+    !event.url.pathname.startsWith("/api")
+  ) {
+    const session = await event.locals.auth();
+    if (!session) {
+      // Redirect to the signin page
+      throw redirect(303, "/auth/signin");
+    }
+  }
 
-export const handle: Handle = async ({ event, resolve }) => {
-  event.locals.messages = messages;
-  event.locals.userID = "12345";
-  event.locals.nextTime = Date.now() + 5000;
+  // If the request is still here, just proceed as normally
+  return resolve(event);
+};
+
+const renderHandle: Handle = async ({ event, resolve }) => {
   if (
     /^\/?api\/[^\/]+\/pages\/\d/.test(event.url.pathname) &&
     !event.url.searchParams.has("live")
@@ -76,3 +72,45 @@ export const handle: Handle = async ({ event, resolve }) => {
   const response = await resolve(event);
   return response;
 };
+
+const userDataHandle: Handle = async ({ event, resolve }) => {
+  const session = await event.locals.auth();
+  let id = session?.user?.id;
+  if (session && !id && session.user?.email) {
+    // Get ID from database
+    const foundUser = await getUserFromEmail(session.user?.email);
+    if (foundUser) {
+      id = foundUser.id;
+    }
+  }
+  if (session && id) {
+    event.locals.role =
+      session.user?.email &&
+      privateEnv.ADMIN_WHITELIST.split(",").includes(session.user.email)
+        ? Role.Admin
+        : Role.User;
+    event.locals.userID = id;
+    const messages = await getMessages(id);
+    if (messages && messages.length > 0) {
+      event.locals.messages = messages;
+      const time = messages[0].createdAt.getTime();
+      if (time)
+        event.locals.nextTime = time + parseInt(publicEnv.PUBLIC_TIME_INTERVAL);
+    } else {
+      event.locals.messages = [];
+      event.locals.nextTime = Date.now();
+    }
+  } else {
+    event.locals.messages = [];
+    event.locals.nextTime = Date.now();
+  }
+  const response = await resolve(event);
+  return response;
+};
+
+export const handle: Handle = sequence(
+  authenticationHandle,
+  authorizationHandle,
+  renderHandle,
+  userDataHandle
+);
