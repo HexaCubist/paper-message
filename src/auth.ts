@@ -6,6 +6,7 @@ import { env } from "$env/dynamic/private";
 
 export const { handle, signIn, signOut } = SvelteKitAuth({
   adapter: DrizzleAdapter(db),
+  trustHost: true,
   providers: [
     Google({
       authorization: {
