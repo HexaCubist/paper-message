@@ -39,7 +39,7 @@ export const getUserFromToken = async (token: string) => {
 
 export const getMessages = async (
   id?: string,
-  startDate = getLastPostTime().subtract(1).toDate(),
+  startDate = getLastPostTime().subtract(1, "day").toDate(),
   endDate = APP_MODE === AppModes.LimitArrives
     ? getLastPostTime().toDate()
     : new Date()
