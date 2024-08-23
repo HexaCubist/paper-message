@@ -2,6 +2,8 @@ FROM ghcr.io/puppeteer/puppeteer:23 AS build
 
 USER root
 
+RUN corepack enable
+
 # Add user so we don't need --no-sandbox.
 RUN mkdir -p /home/pptruser/Downloads /app \
     && chown -R pptruser:pptruser /home/pptruser \
@@ -9,8 +11,6 @@ RUN mkdir -p /home/pptruser/Downloads /app \
 
 # Run everything after as non-privileged user.
 USER pptruser
-
-RUN corepack enable
 
 WORKDIR /app
 COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml", "yarn.lock", "./"]
