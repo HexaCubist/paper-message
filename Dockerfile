@@ -1,4 +1,4 @@
-FROM https://ghcr.io/puppeteer/puppeteer:23 AS build
+FROM ghcr.io/puppeteer/puppeteer:23 AS build
 
 USER root
 
