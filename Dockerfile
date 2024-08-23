@@ -7,6 +7,8 @@ COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml
 RUN yarn
 
 COPY . .
+
+RUN yarn run drizzle-kit migrate
 RUN yarn build
 
 ENV PUBLIC_TIME_INTERVAL=${PUBLIC_TIME_INTERVAL}
