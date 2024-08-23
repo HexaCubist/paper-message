@@ -14,7 +14,9 @@ async function transformPageChunk({ html }: { html: string }) {
     html,
     encoding: "binary",
     transparent: false,
-    // puppeteerArgs: {
+    puppeteerArgs: {
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    },
   });
   return image as Buffer;
 }
