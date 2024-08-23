@@ -43,14 +43,7 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
   event.locals.userID = id;
 
   //3. Get messages
-  if (event.locals.role === Role.Admin) {
-    event.locals.messages = await getMessages();
-  } else {
-    event.locals.messages = await getMessages(
-      undefined,
-      getLastPostTime().subtract(1, "days").toDate()
-    );
-  }
+  event.locals.messages = await getMessages();
 
   //4. Get time the user can next post
   if (APP_MODE == AppModes.LimitSends) {

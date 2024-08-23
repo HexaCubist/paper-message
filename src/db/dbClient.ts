@@ -32,8 +32,10 @@ export const getUserFromEmail = async (email: string) => {
 
 export const getMessages = async (
   id?: string,
-  startDate = getLastPostTime().toDate(),
-  admin = false
+  startDate = getLastPostTime().subtract(1).toDate(),
+  endDate = APP_MODE === AppModes.LimitArrives
+    ? getLastPostTime().toDate()
+    : new Date()
 ) => {
   const messages = await db.query.messages.findMany({
     where: and(
@@ -41,6 +43,7 @@ export const getMessages = async (
       ...[
         id ? eq(schema.messages.authorId, id) : undefined,
         gt(schema.messages.createdAt, startDate),
+        lte(schema.messages.createdAt, endDate),
       ].filter(Boolean)
     ),
     orderBy: desc(schema.messages.createdAt),

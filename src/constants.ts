@@ -34,7 +34,10 @@ export const getNextPostTime = () => {
 };
 
 export const getLastPostTime = () => {
-  if (APP_MODE === AppModes.LimitSends) return moment();
+  if (APP_MODE === AppModes.LimitSends)
+    return moment()
+      .subtract(1, "days")
+      .set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
   const time = moment(env.PUBLIC_DELIVER_TIME, "h:mm A");
   if (moment().isAfter(time)) return time;
   return time.subtract(1, "days");

@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { getNextPostTime } from "../../../../../constants.js";
+  import {
+    APP_MODE,
+    AppModes,
+    getNextPostTime,
+  } from "../../../../../constants.js";
 
   const { data } = $props();
 </script>
@@ -13,8 +17,10 @@
   <h1 class="h-full flex flex-col justify-center text-center">
     <p class="daydream">Royal Society of Besties</p>
     <p class="text-sm">No new messages... Why not send one?</p>
-    <p class="text-sm font-bold">
-      Next Update: {getNextPostTime().format("h:mm A")}
-    </p>
+    {#if APP_MODE === AppModes.LimitArrives}
+      <p class="text-sm font-bold">
+        Next Update: {getNextPostTime().format("h:mm A")}
+      </p>
+    {/if}
   </h1>
 {/if}
