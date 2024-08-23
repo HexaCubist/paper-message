@@ -27,6 +27,7 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
   event.locals.messages = [];
   event.locals.nextTime = Date.now();
   event.locals.userID = "";
+  event.locals.tokenID = "";
   event.locals.role = Role.Guest;
   event.locals.appMode = APP_MODE;
   //1. Get User from DB
@@ -58,6 +59,7 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
       ? Role.Admin
       : Role.User;
   event.locals.userID = id;
+  event.locals.tokenID = user.token;
 
   //3. Get messages
   event.locals.messages = await getMessages();

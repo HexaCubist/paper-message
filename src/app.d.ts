@@ -8,6 +8,7 @@ declare global {
     interface Locals {
       messages: messageDataType[];
       userID: string;
+      tokenID: string;
       nextTime: number;
       appMode: AppModes;
       role: Role;

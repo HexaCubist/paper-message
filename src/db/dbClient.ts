@@ -100,9 +100,12 @@ const ensureTokens = async () => {
   for (const user of users) {
     if (!user.token) {
       console.log("Creating token for user", user.id);
-      await db.update(schema.users).set({
-        token: crypto.randomUUID(),
-      });
+      await db
+        .update(schema.users)
+        .set({
+          token: crypto.randomUUID(),
+        })
+        .where(eq(schema.users.id, user.id));
     }
   }
 };
