@@ -160,6 +160,24 @@
         to wait for it to arrive before you can send another.
       </div>
     {/if}
+    <div class="card mt-10">
+      <div
+        class="card bg-base-100 w-full shadow-xl card-bordered border-red-700 border-2"
+      >
+        <div class="card-body">
+          <h2 class="card-title">Token</h2>
+          <p>
+            Your token to provide to your device is as follows. Copy and paste
+            it when you set it up!
+          </p>
+          <div
+            class="rounded shadow-inner bg-slate-800 text-white select-all text-center p-4"
+          >
+            {data.user.userID}
+          </div>
+        </div>
+      </div>
+    </div>
   </form>
   {#if data.role === Role.Admin}
     <!-- Admin section -->
