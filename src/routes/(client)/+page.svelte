@@ -41,7 +41,9 @@
 
 <!-- Preview box -->
 <div class="p-4 relative">
-  <FrontFace page={0} live={true} bind:previewData userData={data.user} />
+  <div class="hidden sm:contents">
+    <FrontFace page={0} live={true} bind:previewData userData={data.user} />
+  </div>
   {#if !canSend && showComplete}
     <button
       class="preview-complete"
@@ -178,7 +180,7 @@
             </p>
           </div>
           {#if data.messages}
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto max-w-[80%]">
               <table class="table">
                 <!-- head -->
                 <thead>
@@ -258,7 +260,7 @@
 <style lang="postcss">
   .preview-complete {
     @apply rounded-3xl w-full h-auto bg-green-800 mx-auto p-6 shadow-lg flex items-center justify-center text-center;
-    @apply absolute z-20 block top-4 left-0 right-0;
+    @apply relative sm:absolute z-20 block top-4 left-0 right-0;
     @apply bg-opacity-80 backdrop-blur transition-colors duration-500;
     aspect-ratio: 296/128;
     max-width: calc(296px * 2);

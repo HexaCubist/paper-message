@@ -9,7 +9,8 @@
 
 	<div class="navbar bg-base-100 text-base-content border border-black rounded-box">
 		<div class="flex-1">
-			<a href="/" class="btn btn-ghost text-lg">Royal Society of Besties</a>
+			<a href="/" class="btn btn-ghost text-lg hidden sm:flex">Royal Society of Besties</a>
+			<a href="/" class="btn btn-ghost text-lg flex sm:hidden">RBS</a>
 		</div>
 		<div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
@@ -28,7 +29,7 @@
     </div>
 
 	</div>
-	<div class="flex flex-wrap mt-4 gap-4">
+	<div class="flex flex-wrap mt-4 gap-4" style:max-width="calc(100vw - 2rem)">
 		{#if showSidebar}
 		<div class="sidebar w-full max-w-xs lg:max-w-sm col-span-1 bg-base-100 text-base-content card card-bordered border-black">
 			<div class="card-body">
