@@ -21,9 +21,12 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
   callbacks: {
     async signIn({ account, profile }) {
       if (account.provider === "google") {
+        console.log("Google account", profile.email);
         return (
           profile.email_verified &&
-          env.EMAIL_WHITELIST.split(",").includes(profile.email)
+          env.EMAIL_WHITELIST.toLowerCase()
+            .split(",")
+            .includes(profile.email.toLowerCase())
         );
       }
       return true; // Do different verification for other providers that don't have `email_verified`
