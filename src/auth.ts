@@ -26,10 +26,10 @@ const {
   ],
   callbacks: {
     async signIn({ account, profile }) {
-      if (account.provider === "google") {
-        console.log("Google account", profile.email);
-        return (
-          profile.email_verified &&
+      if (account?.provider === "google") {
+        return !!(
+          profile?.email_verified &&
+          profile.email &&
           env.EMAIL_WHITELIST.toLowerCase()
             .split(",")
             .includes(profile.email.toLowerCase())
