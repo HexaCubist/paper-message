@@ -13,13 +13,21 @@ RUN mkdir -p /home/pptruser/Downloads /app \
 USER pptruser
 
 WORKDIR /app
-COPY --chown=pptruser:pptruser ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml", "yarn.lock", "./"]
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml", "yarn.lock", "./"]
 RUN cp -r /home/pptruser/node_modules ./node_modules
+
+
 RUN yarn
+USER root
+RUN mkdir -p /home/pptruser/Downloads \
+    && chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /app
+USER pptruser
+
+# Run everything after as non-privileged user.
+USER pptruser
 
 COPY --chown=pptruser:pptruser . .
-
-RUN ls -la
 
 RUN yarn build
 
