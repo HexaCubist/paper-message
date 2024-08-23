@@ -1,4 +1,4 @@
-FROM ghcr.io/puppeteer/puppeteer:23 AS build
+FROM ghcr.io/puppeteer/puppeteer:21.0.1 AS build
 
 USER root
 
@@ -13,20 +13,14 @@ RUN mkdir -p /home/pptruser/Downloads /app \
 USER pptruser
 
 WORKDIR /app
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml", "yarn.lock", "./"]
+COPY --chown=pptruser:pptruser ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml", "yarn.lock", "./"]
+RUN cp -r /home/pptruser/node_modules ./node_modules
 RUN yarn
 
-COPY . .
+COPY --chown=pptruser:pptruser . .
 
+RUN ls -la
 
-ARG PUBLIC_TIME_INTERVAL=${PUBLIC_TIME_INTERVAL}
-ENV PUBLIC_TIME_INTERVAL=${PUBLIC_TIME_INTERVAL}
-ARG DELIVER_TIME=${DELIVER_TIME}
-ENV DELIVER_TIME=${DELIVER_TIME}
-ARG TZ=${TZ}
-ENV TZ=${TZ}
-ARG AUTH_DRIZZLE_URL=${AUTH_DRIZZLE_URL}
-ENV AUTH_DRIZZLE_URL=${AUTH_DRIZZLE_URL}
 RUN yarn build
 
 EXPOSE 3000
