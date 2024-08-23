@@ -30,6 +30,13 @@ export const getUserFromEmail = async (email: string) => {
   return foundUser;
 };
 
+export const getUserFromToken = async (token: string) => {
+  const foundUser = await db.query.users.findFirst({
+    where: eq(schema.users.token, token),
+  });
+  return foundUser;
+};
+
 export const getMessages = async (
   id?: string,
   startDate = getLastPostTime().subtract(1).toDate(),
@@ -84,3 +91,20 @@ export const clearMessage = async (messageID: number) => {
 process.on("sveltekit:shutdown", async (reason) => {
   await pool.end();
 });
+
+// On server launch, we should also make sure all users have a token
+// This is to ensure that all users can access the API
+// This is a one-time operation
+const ensureTokens = async () => {
+  const users = await db.query.users.findMany();
+  for (const user of users) {
+    if (!user.token) {
+      console.log("Creating token for user", user.id);
+      await db.update(schema.users).set({
+        token: crypto.randomUUID(),
+      });
+    }
+  }
+};
+
+ensureTokens();

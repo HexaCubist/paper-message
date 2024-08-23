@@ -7,19 +7,30 @@ import {
   integer,
   serial,
   varchar,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "@auth/core/adapters";
 import { relations } from "drizzle-orm";
 
-export const users = pgTable("user", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  name: text("name"),
-  email: text("email").unique(),
-  emailVerified: timestamp("emailVerified", { mode: "date" }),
-  image: text("image"),
-});
+export const users = pgTable(
+  "user",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name"),
+    email: text("email").unique(),
+    emailVerified: timestamp("emailVerified", { mode: "date" }),
+    image: text("image"),
+    token: text("token")
+      .$defaultFn(() => crypto.randomUUID())
+      .notNull()
+      .unique(),
+  },
+  (table) => ({
+    tokenIndex: uniqueIndex("token_index").on(table.token),
+  })
+);
 
 export const accounts = pgTable(
   "account",

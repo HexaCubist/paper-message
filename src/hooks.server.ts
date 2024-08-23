@@ -1,7 +1,12 @@
 import { type Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 import { authenticationHandle, authorizationHandle } from "./auth";
-import { getMessages, getUser, getUserFromEmail } from "./db/dbClient";
+import {
+  getMessages,
+  getUser,
+  getUserFromEmail,
+  getUserFromToken,
+} from "./db/dbClient";
 import { env as privateEnv } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
 import {
@@ -37,7 +42,7 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
     }
   } else if (normedPath.startsWith("/api") && event.params.user) {
     // Get ID if in the API routes
-    user = await getUser(event.params.user);
+    user = await getUserFromToken(event.params.user);
     if (user) {
       id = user.id;
     }
