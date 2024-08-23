@@ -95,7 +95,7 @@ process.on("sveltekit:shutdown", async (reason) => {
 // On server launch, we should also make sure all users have a token
 // This is to ensure that all users can access the API
 // This is a one-time operation
-const ensureTokens = async () => {
+export const ensureTokens = async () => {
   const users = await db.query.users.findMany();
   for (const user of users) {
     if (!user.token) {
@@ -109,5 +109,3 @@ const ensureTokens = async () => {
     }
   }
 };
-
-ensureTokens();

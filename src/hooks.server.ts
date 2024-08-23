@@ -2,6 +2,7 @@ import { type Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 import { authenticationHandle, authorizationHandle } from "./auth";
 import {
+  ensureTokens,
   getMessages,
   getUser,
   getUserFromEmail,
@@ -19,6 +20,9 @@ import {
 } from "./constants";
 import { renderHandle } from "$lib/render";
 import normalize from "path-normalize";
+
+// Run here to prevent build-time execution
+ensureTokens();
 
 const userDataHandle: Handle = async ({ event, resolve }) => {
   const session = await event.locals.auth();

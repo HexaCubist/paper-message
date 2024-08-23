@@ -1,6 +1,6 @@
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import type { messageDataType } from "../../../hooks.server";
+import type { messageDataType } from "../../../constants";
 
 const allPages = import.meta.glob("./pages/*/+page.svelte");
 

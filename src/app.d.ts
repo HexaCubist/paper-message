@@ -1,4 +1,4 @@
-import type { messageDataType, Role } from "./hooks.server";
+import type { messageDataType, Role } from "./constants";
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
