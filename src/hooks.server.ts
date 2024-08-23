@@ -1,5 +1,4 @@
 import { redirect, type Handle } from "@sveltejs/kit";
-import nodeHtmlToImage from "node-html-to-image";
 import Jimp from "jimp";
 import { encode } from "bmp-ts";
 import { sequence } from "@sveltejs/kit/hooks";
@@ -8,17 +7,60 @@ import { getMessages, getUser, getUserFromEmail } from "./db/dbClient";
 import { env as privateEnv } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
 import { Role } from "./hookTypes";
+import puppeteer from "puppeteer";
+import { env } from "$env/dynamic/private";
+import normalize from "path-normalize";
+
+const resolution = {
+  w: 296,
+  h: 128,
+};
+
+const getNextPostTime = () => {
+  const time = moment("6:00 PM", "h:mm A");
+  if (moment().isBefore(time)) return time;
+  return time.add(1, "days");
+};
 
 async function transformPageChunk({ html }: { html: string }) {
-  const image = await nodeHtmlToImage({
-    html,
-    encoding: "binary",
-    transparent: false,
-    puppeteerArgs: {
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    },
+  // const image = await nodeHtmlToImage({
+  //   html,
+  //   encoding: "binary",
+  //   transparent: false,
+  //   puppeteerArgs: {
+  //     args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  //   },
+  // });
+  // return image as Buffer;
+  const browser = await puppeteer.launch({
+    // https://github.com/puppeteer/puppeteer/issues/2410#issuecomment-1249727413
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      `--window-size=${resolution.w},${resolution.h}`,
+      "--font-render-hinting=none",
+      "--force-color-profile=generic-rgb",
+      "--disable-gpu",
+      "--disable-translate",
+      "--disable-extensions",
+      "--disable-accelerated-2d-canvas",
+      "--deterministic-mode",
+      "--disable-skia-runtime-opts",
+      "--force-device-scale-factor=1",
+      "--js-flags=--random-seed=1157259157",
+      "--disable-partial-raster",
+      "--use-gl=swiftshader",
+      "-–disable-dev-shm-usage",
+      "-–no-first-run",
+      "--no-sandbox",
+      "--disable-web-security",
+      "--ignore-certificate-errors",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+    ],
   });
-  return image as Buffer;
+  const page = await browser.newPage();
+  await page.goto("https://developer.chrome.com/");
 }
 
 export type messageDataType = NonNullable<
@@ -27,10 +69,8 @@ export type messageDataType = NonNullable<
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
   // Protect all routes except /api and /auth
-  if (
-    !event.url.pathname.startsWith("/auth") &&
-    !event.url.pathname.startsWith("/api")
-  ) {
+  const normPath = normalize(event.url.pathname);
+  if (!normPath.startsWith("/auth") && !normPath.startsWith("/api")) {
     const session = await event.locals.auth();
     if (!session) {
       // Redirect to the signin page
@@ -43,17 +83,36 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 };
 
 const renderHandle: Handle = async ({ event, resolve }) => {
+  const normPath = normalize(event.url.pathname);
   if (
-    /^\/?api\/[^\/]+\/pages\/\d/.test(event.url.pathname) &&
+    /^\/?api\/[^\/]+\/pages\/\d/.test(normPath) &&
     !event.url.searchParams.has("live")
   ) {
     const res = await resolve(event);
     if (res.status !== 200) {
       return res;
     }
-    const body = await res.text();
-    const transformedBody = await transformPageChunk({ html: body });
-    const img = await Jimp.read(transformedBody);
+    // const body = await res.text();
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      defaultViewport: null,
+    });
+    const page = await browser.newPage();
+    await page.setViewport({
+      width: resolution.w,
+      height: resolution.h,
+      deviceScaleFactor: 1,
+    });
+    await page.goto(`${env.PRIVATE_HOST}${normPath}?live`, {
+      waitUntil: "networkidle0",
+    });
+    const screenshot = await page.screenshot({
+      type: "png",
+      encoding: "binary",
+      captureBeyondViewport: false,
+    });
+    // const transformedBody = await transformPageChunk({ html: body });
+    const img = await Jimp.read(Buffer.from(screenshot));
     const onebit = encode({
       data: img.bitmap.data,
       width: img.bitmap.width,

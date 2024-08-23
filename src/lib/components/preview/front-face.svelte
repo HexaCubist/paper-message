@@ -31,11 +31,12 @@
 
   const changePage = async (newPage: number) => {
     if (changing) return;
+    let oldPage = page;
     changing = true;
     setTimeout(() => {
       page = newPage;
     }, 250);
-    if (previewing || live)
+    if (previewing || live || oldPage === newPage)
       setTimeout(() => {
         changing = false;
       }, 500);

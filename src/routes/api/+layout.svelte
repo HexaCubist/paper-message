@@ -23,7 +23,7 @@
 </script>
 
 <div class="flex gap-[2px] h-full overflow-hidden">
-	<div class="col bg-black text-white w-[29px] shrink-0 h-full rounded p-[2px] flex flex-col">
+	<div class="col bg-black text-white w-[25px] shrink-0 h-full rounded p-[2px] flex flex-col">
 		<div class="grow py-[5px] relative mx-auto text-sm">
 				<!-- Sidebar scroller -->
 				<div class="w-[9px] text-center bg-white h-full rounded-full relative overflow-clip">
@@ -35,8 +35,8 @@
 				</div>
 				</div>
 		</div>
-		<div class="qrHolder w-[25px] h-[25px]">
-			<img class="mx-auto w-full h-full" src={data.qr} alt="QR Code"  />
+		<div class="qrHolder w-[21px] h-[21px]">
+			<img class="mx-auto w-[21px] h-[21px]" src={data.qr} alt="QR Code"  />
 		</div>
 	</div>
 	<div class="col grow overflow-hidden relative p-[2px]">
@@ -61,4 +61,18 @@
 								1px 0 1px black,
 								-1px 0 1px black;
 	}
+	* {
+		image-rendering: pixelated;
+	}
+	* {
+    -webkit-print-color-adjust: exact !important;
+    text-rendering: geometricprecision !important;
+	}
+
+	::-webkit-scrollbar {
+			display: none; /* Chrome Safari */
+			-ms-overflow-style: none; /* IE 10+ */
+			scrollbar-width: none; /* Firefox */
+	}
+
 	</style>

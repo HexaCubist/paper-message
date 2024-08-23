@@ -22,6 +22,7 @@ export const load: LayoutServerLoad = async ({
     qr: await QRCode.toDataURL(env.PUBLIC_HOST, {
       errorCorrectionLevel: "L",
       margin: 0,
+      scale: 1,
       color: {
         dark: "#ffffff",
         light: "#000000",

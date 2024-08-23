@@ -45,9 +45,10 @@
     "drizzle-orm": "^0.33.0",
     "jimp": "^0.22.12",
     "moment": "^2.30.1",
-    "node-html-to-image": "^4.0.0",
+    "path-normalize": "^6.0.13",
     "pg": "^8.12.0",
     "postgres": "^3.4.4",
+    "puppeteer": "^23.1.1",
     "qrcode": "^1.5.4"
   }
 }
