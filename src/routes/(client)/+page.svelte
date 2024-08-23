@@ -1,7 +1,13 @@
 <script lang="ts">
   import FrontFace from "$lib/components/preview/front-face.svelte";
   import debounce from "debounce";
-  import { AppModes, type messageDataType } from "../../constants";
+  import {
+    APP_MODE,
+    AppModes,
+    getLastPostTime,
+    getNextPostTime,
+    type messageDataType,
+  } from "../../constants";
   import moment from "moment";
   import { env } from "$env/dynamic/public";
   import { Role } from "../../constants.js";
@@ -51,9 +57,7 @@
             .duration(env.PUBLIC_TIME_INTERVAL)
             .humanize()}
         {:else}
-          Your message will appear on {moment(data.nextTime).format(
-            "dddd, MMMM Do YYYY"
-          )}
+          Your message will appear at {moment(data.nextTime).format("h:mma")}
         {/if}
       </h3>
     </button>
@@ -92,7 +96,13 @@
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(previewData),
+        body: JSON.stringify({
+          message: liveText,
+        }),
+      }).catch((e) => {
+        console.error(e);
+        alert("Failed to send message. Please try again.");
+        debugger;
       });
       sending = false;
       window.location.reload();
@@ -124,7 +134,12 @@
       {#if sending}
         Sending...
       {:else if canSend}
-        Send (once {moment.duration(env.PUBLIC_TIME_INTERVAL).humanize()})
+        Send
+        {#if APP_MODE === AppModes.LimitSends}
+          (once {moment.duration(env.PUBLIC_TIME_INTERVAL).humanize()})
+        {:else}
+          now (arrives {moment(getNextPostTime()).format("h:mma")})
+        {/if}
       {:else}
         You can send {timeTillLabel}
         {#if timeTill < 60 * 60 * 1000}
@@ -136,6 +151,13 @@
         {/if}
       {/if}
     </button>
+    {#if canSend && APP_MODE === AppModes.LimitArrives}
+      <div class="pt-4">
+        <strong> Heads up! </strong>
+        You can only send one message at a time. Once you've sent this, you'll need
+        to wait for it to arrive before you can send another.
+      </div>
+    {/if}
   </form>
   {#if data.role === Role.Admin}
     <!-- Admin section -->
@@ -145,6 +167,16 @@
       >
         <div class="card-body">
           <h2 class="card-title">Admin Mode!</h2>
+          <div class="font-mono">
+            <p>
+              <strong>Next Sending Time:</strong>
+              {moment(getNextPostTime()).toLocaleString()}
+            </p>
+            <p>
+              <strong>Last Sending Time:</strong>
+              {moment(getLastPostTime()).toLocaleString()}
+            </p>
+          </div>
           {#if data.messages}
             <div class="overflow-x-auto">
               <table class="table">
@@ -160,9 +192,18 @@
                 <tbody>
                   {#each data.messages as message}
                     <tr>
-                      <td title={moment(message.createdAt).format()}
-                        >{moment(message.createdAt).fromNow()}</td
-                      >
+                      <td>
+                        <span title={moment(message.createdAt).format()}>
+                          {moment(message.createdAt).fromNow()}
+                        </span>
+                        {#if APP_MODE === AppModes.LimitArrives}
+                          {#if moment(message.createdAt).valueOf() > getLastPostTime().valueOf()}
+                            <span class="text-red-700" title="Pending">❌</span>
+                          {:else}
+                            <span class="text-green-700" title="Sent">✔️</span>
+                          {/if}
+                        {/if}
+                      </td>
                       <td>{message.author?.name}</td>
                       <td>{message.message}</td>
                       <td>

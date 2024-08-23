@@ -5,9 +5,10 @@
 import type { Handle } from "@sveltejs/kit";
 import normalize from "path-normalize";
 import puppeteer from "puppeteer";
-import { resolution } from "../hooks.server";
+import { resolution } from "../constants";
 import { env } from "$env/dynamic/private";
 import Jimp from "jimp";
+import { encode } from "bmp-ts";
 
 export const renderHandle: Handle = async ({ event, resolve }) => {
   const normPath = normalize(event.url.pathname);

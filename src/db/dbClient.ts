@@ -1,10 +1,16 @@
 import { pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
-import { and, desc, eq, gt } from "drizzle-orm";
+import { and, desc, eq, gt, lte } from "drizzle-orm";
 import { env } from "$env/dynamic/private";
 import postgres from "postgres";
 import * as schema from "./schema";
 import { drizzle } from "drizzle-orm/postgres-js";
 import "dotenv/config";
+import {
+  APP_MODE,
+  AppModes,
+  getLastPostTime,
+  getNextPostTime,
+} from "../constants";
 
 const pool = postgres(process.env.AUTH_DRIZZLE_URL!, { max: 1 });
 
@@ -24,20 +30,19 @@ export const getUserFromEmail = async (email: string) => {
   return foundUser;
 };
 
-export const getMessages = async (id?: string, startDate = new Date(0)) => {
-  let filter;
-  if (id && startDate) {
-    filter = and(
-      eq(schema.messages.authorId, id),
-      gt(schema.messages.createdAt, startDate)
-    );
-  } else if (id) {
-    filter = eq(schema.messages.authorId, id);
-  } else if (startDate) {
-    filter = gt(schema.messages.createdAt, startDate);
-  }
+export const getMessages = async (
+  id?: string,
+  startDate = getLastPostTime().toDate(),
+  admin = false
+) => {
   const messages = await db.query.messages.findMany({
-    where: filter,
+    where: and(
+      // Get filter based on id and startDate
+      ...[
+        id ? eq(schema.messages.authorId, id) : undefined,
+        gt(schema.messages.createdAt, startDate),
+      ].filter(Boolean)
+    ),
     orderBy: desc(schema.messages.createdAt),
     limit: 20,
     with: {

@@ -4,20 +4,14 @@ import { authenticationHandle, authorizationHandle } from "./auth";
 import { getMessages, getUser, getUserFromEmail } from "./db/dbClient";
 import { env as privateEnv } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
-import { AppModes, Role } from "./constants";
-import { env } from "$env/dynamic/private";
-import moment from "moment";
+import {
+  AppModes,
+  Role,
+  APP_MODE,
+  getNextPostTime,
+  getLastPostTime,
+} from "./constants";
 import { renderHandle } from "$lib/render";
-
-export const APP_MODE = env.DELIVER_TIME
-  ? AppModes.LimitArrives
-  : AppModes.LimitSends;
-
-const getNextPostTime = () => {
-  const time = moment("6:00 PM", "h:mm A");
-  if (moment().isBefore(time)) return time;
-  return time.add(1, "days");
-};
 
 const userDataHandle: Handle = async ({ event, resolve }) => {
   const session = await event.locals.auth();
@@ -49,16 +43,29 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
   event.locals.userID = id;
 
   //3. Get messages
-  event.locals.messages = await getMessages();
+  if (event.locals.role === Role.Admin) {
+    event.locals.messages = await getMessages();
+  } else {
+    event.locals.messages = await getMessages(
+      undefined,
+      getLastPostTime().subtract(1, "days").toDate()
+    );
+  }
 
   //4. Get time the user can next post
   if (APP_MODE == AppModes.LimitSends) {
-    const time = messages.find((m) => m.authorId === id)?.createdAt.getTime();
+    const time = event.locals.messages
+      .find((m) => m.authorId === id)
+      ?.createdAt.getTime();
     if (time)
       event.locals.nextTime = time + parseInt(publicEnv.PUBLIC_TIME_INTERVAL);
-    else event.locals.nextTime = Date.now();
   } else {
-    event.locals.nextTime = getNextPostTime().valueOf();
+    const hasPosted = event.locals.messages.some(
+      (m) => m.authorId === id && m.createdAt > getLastPostTime()
+    );
+    event.locals.nextTime = hasPosted
+      ? getNextPostTime().valueOf()
+      : getLastPostTime().valueOf();
   }
 
   const response = await resolve(event);
