@@ -17,8 +17,7 @@ ARG TZ=${TZ}
 ENV TZ=${TZ}
 ARG AUTH_DRIZZLE_URL=${AUTH_DRIZZLE_URL}
 ENV AUTH_DRIZZLE_URL=${AUTH_DRIZZLE_URL}
-RUN yarn run drizzle-kit migrate
 RUN yarn build
 
 EXPOSE 3000
-CMD ["node", "build"]
+CMD yarn run drizzle-kit migrate && node build
