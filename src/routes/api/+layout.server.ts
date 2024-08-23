@@ -1,3 +1,4 @@
+import { env } from "$env/dynamic/public";
 import type { LayoutServerLoad } from "./$types";
 import QRCode from "qrcode";
 
@@ -18,7 +19,7 @@ export const load: LayoutServerLoad = async ({
   return {
     page: parseInt(page!),
     messages: locals.messages,
-    qr: await QRCode.toDataURL("https://paper.zac.nz/", {
+    qr: await QRCode.toDataURL(env.PUBLIC_HOST, {
       errorCorrectionLevel: "L",
       margin: 0,
       color: {

@@ -9,7 +9,7 @@
 
 	<div class="navbar bg-base-100 text-base-content border border-black rounded-box">
 		<div class="flex-1">
-			<a href="/" class="btn btn-ghost text-lg">Paper Messages</a>
+			<a href="/" class="btn btn-ghost text-lg">Royal Society of Besties</a>
 		</div>
 		<div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
