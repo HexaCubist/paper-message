@@ -1,7 +1,7 @@
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { clearMessages, createMessage, getUser } from "../../../../db/dbClient";
-import { Role } from "../../../../hookTypes";
+import { Role } from "../../../../constants";
 
 export const POST: RequestHandler = async ({ request, params, locals }) => {
   if (locals.role !== Role.Admin) {

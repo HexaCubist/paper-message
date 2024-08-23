@@ -9,6 +9,7 @@ declare global {
       messages: messageDataType[];
       userID: string;
       nextTime: number;
+      appMode: AppModes;
       role: Role;
     }
     // interface PageData {}

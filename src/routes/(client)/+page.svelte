@@ -1,10 +1,11 @@
 <script lang="ts">
   import FrontFace from "$lib/components/preview/front-face.svelte";
   import debounce from "debounce";
-  import type { messageDataType } from "../../hooks.server.js";
+  import { AppModes, type messageDataType } from "../../constants";
   import moment from "moment";
   import { env } from "$env/dynamic/public";
-  import { Role } from "../../hookTypes.js";
+  import { Role } from "../../constants.js";
+  import { fade } from "svelte/transition";
 
   const { data } = $props();
 
@@ -28,11 +29,35 @@
     timeTill = data.nextTime - Date.now();
     timeTillLabel = moment(data.nextTime).fromNow();
   }, 250);
+
+  let showComplete = $state(true);
 </script>
 
 <!-- Preview box -->
-<div class="p-4">
+<div class="p-4 relative">
   <FrontFace page={0} live={true} bind:previewData userData={data.user} />
+  {#if !canSend && showComplete}
+    <button
+      class="preview-complete"
+      onclick={() => {
+        showComplete = false;
+      }}
+      out:fade
+    >
+      <h3 class="daydream daydream-lg">
+        Submitted!
+        {#if data.appMode === AppModes.LimitSends}
+          You can send again in {moment
+            .duration(env.PUBLIC_TIME_INTERVAL)
+            .humanize()}
+        {:else}
+          Your message will appear on {moment(data.nextTime).format(
+            "dddd, MMMM Do YYYY"
+          )}
+        {/if}
+      </h3>
+    </button>
+  {/if}
 </div>
 <label class="form-control block max-w-screen-md mx-auto">
   <div class="label">
@@ -101,7 +126,7 @@
       {:else if canSend}
         Send (once {moment.duration(env.PUBLIC_TIME_INTERVAL).humanize()})
       {:else}
-        You can send in {timeTillLabel}
+        You can send {timeTillLabel}
         {#if timeTill < 60 * 60 * 1000}
           ({moment(timeTill).format("mm:ss")})
         {:else if timeTill < 24 * 60 * 60 * 1000}
@@ -188,3 +213,22 @@
     </div>
   {/if}
 </label>
+
+<style lang="postcss">
+  .preview-complete {
+    @apply rounded-3xl w-full h-auto bg-green-800 mx-auto p-6 shadow-lg flex items-center justify-center text-center;
+    @apply absolute z-20 block top-4 left-0 right-0;
+    @apply bg-opacity-80 backdrop-blur transition-colors duration-500;
+    aspect-ratio: 296/128;
+    max-width: calc(296px * 2);
+    h3 {
+      @apply text-white transition-transform duration-500;
+    }
+    &:hover {
+      @apply bg-opacity-100;
+      h3 {
+        @apply scale-105;
+      }
+    }
+  }
+</style>

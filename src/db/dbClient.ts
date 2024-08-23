@@ -1,5 +1,5 @@
 import { pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, gt } from "drizzle-orm";
 import { env } from "$env/dynamic/private";
 import postgres from "postgres";
 import * as schema from "./schema";
@@ -24,26 +24,33 @@ export const getUserFromEmail = async (email: string) => {
   return foundUser;
 };
 
-export const getMessages = async (id?: string) => {
-  const foundUser = await db.query.users.findFirst({
-    where: id ? eq(schema.users.id, id) : undefined,
+export const getMessages = async (id?: string, startDate = new Date(0)) => {
+  let filter;
+  if (id && startDate) {
+    filter = and(
+      eq(schema.messages.authorId, id),
+      gt(schema.messages.createdAt, startDate)
+    );
+  } else if (id) {
+    filter = eq(schema.messages.authorId, id);
+  } else if (startDate) {
+    filter = gt(schema.messages.createdAt, startDate);
+  }
+  const messages = await db.query.messages.findMany({
+    where: filter,
+    orderBy: desc(schema.messages.createdAt),
+    limit: 20,
     with: {
-      messages: {
-        limit: 10,
-        orderBy: desc(schema.messages.createdAt),
-        with: {
-          author: {
-            columns: {
-              name: true,
-              id: true,
-              image: true,
-            },
-          },
+      author: {
+        columns: {
+          name: true,
+          id: true,
+          image: true,
         },
       },
     },
   });
-  return foundUser?.messages;
+  return messages;
 };
 
 export const createMessage = async (id: string, message: string) => {

@@ -1,4 +1,4 @@
-import { Role } from "../../hookTypes";
+import { Role } from "../../constants";
 import type { userDataType } from "../api/[user]/+server";
 import type { LayoutServerLoad } from "./$types";
 
@@ -14,6 +14,7 @@ export const load: LayoutServerLoad = async ({ fetch, locals }) => {
     )) as userDataType,
     account: session.user,
     role: locals.role,
+    appMode: locals.appMode,
     nextTime: locals.nextTime,
     ...(locals.role === Role.Admin
       ? {
