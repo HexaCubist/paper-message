@@ -105,7 +105,7 @@
         {#if timeTill < 60 * 60 * 1000}
           ({moment(timeTill).format("mm:ss")})
         {:else if timeTill < 24 * 60 * 60 * 1000}
-          (at {moment(data.nextTime).format("HH:mma")})
+          (at {moment(data.nextTime).format("h:mma")})
         {:else}
           (on {moment(data.nextTime).format("dddd, MMMM Do YYYY")})
         {/if}
