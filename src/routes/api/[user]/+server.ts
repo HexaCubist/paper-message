@@ -16,7 +16,7 @@ export interface userDataType {
 export const GET: RequestHandler = ({ url, locals }) => {
   return json({
     version: APP_VERSION,
-    last_message_at: new Date().toISOString(),
+    last_message_at: locals.messages[0]?.createdAt || "",
     message_count: locals.messages.length,
     total_pages: Object.keys(allPages).length - 1 + locals.messages.length,
     userID: locals.userID,
