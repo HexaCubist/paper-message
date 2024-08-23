@@ -1,6 +1,6 @@
 import { env } from "$env/dynamic/public";
 import moment from "moment";
-import type { getMessages } from "./db/dbClient";
+import type { getMessages, getUser } from "./db/dbClient";
 
 export const resolution = {
   w: 296,
@@ -16,6 +16,7 @@ export enum Role {
 export type messageDataType = NonNullable<
   Awaited<ReturnType<typeof getMessages>>
 >[0];
+export type userDataType = NonNullable<Awaited<ReturnType<typeof getUser>>>;
 
 export enum AppModes {
   LimitSends,

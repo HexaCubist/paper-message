@@ -10,34 +10,46 @@ import {
   APP_MODE,
   getNextPostTime,
   getLastPostTime,
+  type userDataType,
 } from "./constants";
 import { renderHandle } from "$lib/render";
+import normalize from "path-normalize";
 
 const userDataHandle: Handle = async ({ event, resolve }) => {
   const session = await event.locals.auth();
+  const normedPath = normalize(event.url.pathname);
   // Set up defaults
   event.locals.messages = [];
   event.locals.nextTime = Date.now();
   event.locals.userID = "";
   event.locals.role = Role.Guest;
   event.locals.appMode = APP_MODE;
-  //1. Get ID
+  //1. Get User from DB
   let id = session?.user?.id;
-  if (session && !id && session.user?.email) {
+  let user: userDataType | undefined;
+  if (id) {
+    user = await getUser(id);
+  } else if (session && session.user?.email) {
     // Get ID from database
-    const foundUser = await getUserFromEmail(session.user?.email);
-    if (foundUser) {
-      id = foundUser.id;
+    user = await getUserFromEmail(session.user?.email);
+    if (user) {
+      id = user.id;
+    }
+  } else if (normedPath.startsWith("/api") && event.params.user) {
+    // Get ID if in the API routes
+    user = await getUser(event.params.user);
+    if (user) {
+      id = user.id;
     }
   }
   // Exit if no session or id
-  if (!id || !session) {
+  if (!user || !id) {
     return await resolve(event);
   }
+
   //2. Get user ID and role
   event.locals.role =
-    session.user?.email &&
-    privateEnv.ADMIN_WHITELIST.split(",").includes(session.user.email)
+    user.email && privateEnv.ADMIN_WHITELIST.split(",").includes(user.email)
       ? Role.Admin
       : Role.User;
   event.locals.userID = id;
