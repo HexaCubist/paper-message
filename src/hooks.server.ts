@@ -90,7 +90,7 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
         ? Role.Admin
         : Role.User;
     event.locals.userID = id;
-    const messages = await getMessages(id);
+    const messages = await getMessages();
     if (messages && messages.length > 0) {
       event.locals.messages = messages;
       const time = messages[0].createdAt.getTime();
