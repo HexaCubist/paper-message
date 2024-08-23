@@ -38,6 +38,7 @@
   "packageManager": "yarn@4.4.0",
   "dependencies": {
     "@auth/drizzle-adapter": "^1.4.2",
+    "@sveltejs/adapter-node": "^5.2.2",
     "bmp-ts": "^1.0.9",
     "debounce": "^2.1.0",
     "dotenv": "^16.4.5",
