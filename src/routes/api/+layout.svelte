@@ -61,15 +61,15 @@
 								1px 0 1px black,
 								-1px 0 1px black;
 	}
-	* {
+	:global(*) {
 		image-rendering: pixelated;
-	}
-	* {
     -webkit-print-color-adjust: exact !important;
     text-rendering: geometricprecision !important;
+		-webkit-font-smoothing: none;
 	}
 
-	::-webkit-scrollbar {
+
+	:global(::-webkit-scrollbar) {
 			display: none; /* Chrome Safari */
 			-ms-overflow-style: none; /* IE 10+ */
 			scrollbar-width: none; /* Firefox */
