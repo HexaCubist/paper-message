@@ -14,5 +14,8 @@ export interface userDataType {
 }
 
 export const GET: RequestHandler = ({ url, locals }) => {
+  if (!locals.userID) {
+    return error(401, "Unauthorized");
+  }
   return text(locals.messages[0]?.createdAt.valueOf().toString());
 };
