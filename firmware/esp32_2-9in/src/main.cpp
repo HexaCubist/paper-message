@@ -3,6 +3,7 @@
 #include "WifiController.h"
 #include <ScreenBuffer.h>
 #include "Bounce2.h"
+#include <UserInfo.h>
 
 
 static constexpr int BUTTON_INPUT = 4; // GPIO4 (P4)
@@ -17,6 +18,9 @@ uint8_t grid_color_buffer[display_m_height][display_m_width] = {{0}};
 uint8_t page_num = 0;
 uint8_t max_page_num = 5;
 
+UserInfo userInfo;
+ulong lastCheckedTimestamp = 0;
+uint64_t lastRenderedTimestamp = 0;
 
 void doubleClick() {
   Serial.println("x2");
@@ -79,16 +83,37 @@ void setup() {
     Serial.println(ESP.getHeapSize());
     Serial.println(ESP.getMinFreeHeap());
 
-    load_image();
 
+    userInfo = getUserInfo(getApiToken());
+    lastRenderedTimestamp = userInfo.last_message_at;
+    max_page_num = userInfo.total_pages;
+    load_image();
+    Serial.print("Waiting for updates");
 }
 
 void loop() {
     button.update();
     if (button.pressed()) {
-        page_num = page_num + 1;
+        Serial.println();
+        page_num = (page_num + 1) % max_page_num;
         load_image();
+        Serial.print("Waiting for updates");
     }
-    delay(10);
+
+    if (millis() - lastCheckedTimestamp > 1500) {
+        userInfo = getUserInfo(getApiToken());
+        max_page_num = userInfo.total_pages;
+
+        lastCheckedTimestamp = millis();
+
+        Serial.print(".");
+
+        if (userInfo.last_message_at != lastRenderedTimestamp) {
+            Serial.println();
+            load_image();
+            lastRenderedTimestamp = userInfo.last_message_at;
+            Serial.print("Waiting for updates");
+        }
+    }
 }
 

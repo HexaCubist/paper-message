@@ -331,10 +331,6 @@ bool loadBitmap(uint8_t grid_mono_buffer[display_m_height][display_m_width], uin
 			} // end pixel
 			int16_t yrow = (flip ? h - row - 1 : row);
 			// display.writeImage(output_row_mono_buffer, output_row_color_buffer, x, yrow, w, 1);
-      Serial.println("writing to screen buffer");
-      Serial.println(sizeof(output_row_mono_buffer));
-      Serial.println(yrow);
-	Serial.println(grid_mono_buffer[yrow][0]);
       memcpy(grid_mono_buffer[yrow], output_row_mono_buffer, sizeof(output_row_mono_buffer));
       memcpy(grid_color_buffer[yrow], output_row_color_buffer, sizeof(output_row_mono_buffer));
       } // end line
