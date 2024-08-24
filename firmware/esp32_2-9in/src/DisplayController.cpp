@@ -17,7 +17,9 @@ GxEPD2_DISPLAY_CLASS<GxEPD2_DRIVER_CLASS, MAX_HEIGHT(GxEPD2_DRIVER_CLASS)> displ
 
 void displayInit() {
 	display.init(115200, true, 2, false); // USE THIS for Waveshare boards with "clever" reset circuit, 2ms reset pulse
-	// display.fillScreen(GxEPD_WHITE);
+
+	renderStatic(IMAGE_BOOT);
+
 	// display.refresh(true);
 }
 
@@ -25,16 +27,24 @@ void renderScreen(uint8_t output_row_mono_buffer[display_m_height][display_m_wid
 
 	// output_row_mono_buffer[height][width]
 	// output_row_mono_buffer[128   ][296  ]
-
-
-	// display.fillScreen(GxEPD_WHITE);
-	// 	display.drawRect(0, 0, display_m_height, display_m_height, GxEPD_BLACK);
+	
+	uint8_t mother_buffer[display_m_height * display_m_width] = {};
 	for (int y = 0; y < display_m_height; y++) {
-		display.drawBitmap(y, 0, output_row_mono_buffer[y], 1, display_width, GxEPD_BLACK);
+		for (int x = 0; x < display_m_width; x++) {
+			mother_buffer[y * display_m_width + x] = output_row_mono_buffer[y][x];
+		}
 	}
-	display.refresh(true);
+
+
+		// display.fillRect(0, 0, display_m_height, display_m_height, GxEPD_BLACK);
+	display.drawImage(mother_buffer, 0, 0, display_width, display_height, false);
+	Serial.println("Screen rendered!");
 }
 
+void renderStatic(const unsigned char crazy[display_m_height * display_m_width]) {
+	display.drawImage(crazy, 0, 0, display_width, display_height, false);
+
+}
 
 // void showBitmapFrom_HTTPS(const char* host, const char* path, const char* filename, const char* fingerprint, int16_t x, int16_t y, bool with_color)
 // {

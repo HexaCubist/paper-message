@@ -6,6 +6,7 @@ bool shouldSaveConfig = false;
 
 void configModeCallback(WiFiManager* myWiFiManager) {
     Serial.println("config mode");
+    renderStatic(IMAGE_WIFI);
 }
 
 void saveConfigCallback() {
@@ -14,11 +15,51 @@ void saveConfigCallback() {
 }
 
 bool wifiInit(bool force_config) {
-    if (!EEPROM.begin(512)) {
-        Serial.println("Failed to initialise EEPROM");
-        return false;
+    // if (!EEPROM.begin(512)) {
+    //     Serial.println("Failed to initialise EEPROM");
+    //     return false;
+    // }
+    // String saved_token = EEPROM.readString(0);
+      if (SPIFFS.begin()) {
+    Serial.println("mounted file system");
+    if (SPIFFS.exists("/config.json")) {
+      //file exists, reading and loading
+      Serial.println("reading config file");
+      File configFile = SPIFFS.open("/config.json", "r");
+      if (configFile) {
+        Serial.println("opened config file");
+        size_t size = configFile.size();
+        // Allocate a buffer to store contents of the file.
+        std::unique_ptr<char[]> buf(new char[size]);
+
+        configFile.readBytes(buf.get(), size);
+
+        DynamicJsonDocument json(1024);
+        auto deserializeError = deserializeJson(json, buf.get());
+        serializeJson(json, Serial);
+        if ( ! deserializeError ) {
+
+          Serial.println("\nparsed json");
+          strcpy(api_token, json["api_token"]);
+          if (json["api_token"] != nullptr) {
+            Serial.print("Found API token in config file: ");
+            Serial.println(api_token);
+          } else {
+            Serial.println("No API token found in config file");
+            force_config = true;
+          }
+        } else {
+          Serial.println("failed to load json config");
+          force_config = true;
+        }
+        configFile.close();
+      }
     }
-    Serial.println(EEPROM.readString(0));
+  } else {
+    Serial.println("failed to mount FS");
+    force_config = true;
+  }
+
 
     WiFiManager wm;
     wm.setSaveConfigCallback(saveConfigCallback);
@@ -39,12 +80,20 @@ bool wifiInit(bool force_config) {
         Serial.println("Failed to connect");
     } else {
         Serial.println("connected...yay :)");
-        // strcpy(api_token, customParam.getValue());
         strcpy(api_token, custom_token->getValue());
         if (shouldSaveConfig) {
-            EEPROM.writeString(0, api_token);
-            delay(100);
-            Serial.println(EEPROM.readString(0));
+            Serial.println("saving config");
+            DynamicJsonDocument json(1024);
+            json["api_token"] = api_token;
+
+            File configFile = SPIFFS.open("/config.json", "w");
+            if (!configFile) {
+                Serial.println("failed to open config file for writing");
+            }
+
+            serializeJson(json, Serial);
+            serializeJson(json, configFile);
+            configFile.close();
         }
     }
 

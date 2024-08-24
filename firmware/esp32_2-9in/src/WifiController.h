@@ -3,9 +3,14 @@
 #include <WiFiClient.h>
 #include <WiFiClientSecure.h>
 
+#include <SPIFFS.h>
+#include <ArduinoJson.h>
+
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
 
 #include <EEPROM.h>
+#include <DisplayController.h>
+#include <images/wifi.h>
 
 void configModeCallback (WiFiManager *myWiFiManager);
 

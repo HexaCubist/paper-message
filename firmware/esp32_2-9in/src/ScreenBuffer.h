@@ -5,8 +5,8 @@
 #include "esp32-hal-psram.h"
 #include <Arduino.h>
 
-#define display_height 128
-#define display_width 296
+#define display_height 296
+#define display_width 128
 #define display_m_height display_height
 #define display_m_width display_width/8
 
