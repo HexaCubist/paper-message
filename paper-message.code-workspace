@@ -1,0 +1,16 @@
+{
+  "folders": [
+	{
+		"path": "."
+	},
+	{
+		"name": "240824-113650-denky32",
+		"path": "../../PlatformIO/Projects/240824-113650-denky32"
+	},
+	{
+		"name": "esp32_2-9in",
+		"path": "firmware/esp32_2-9in"
+	}
+],
+  "settings": {}
+}
