@@ -23,7 +23,7 @@ export const renderHandle: Handle = async ({ event, resolve }) => {
     event.url.href
   );
   if (
-    /^\/?api\/[^\/]+\/pages\/\d/.test(normPath) &&
+    /^\/?api\/[^\/]+\/pages\/.+/.test(normPath) &&
     !event.url.searchParams.has("live")
   ) {
     const res = await resolve(event);
