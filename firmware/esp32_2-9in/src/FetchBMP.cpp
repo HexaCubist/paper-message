@@ -108,7 +108,11 @@ ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
 	}
 	Serial.print("requesting URL: ");
 	Serial.println(String("https://") + rsb_host + full_path + strPageNum);
-	client.print(String("GET ") + path + strPageNum + " HTTP/1.1\r\n" +
+  Serial.println(String("GET ") + full_path + strPageNum + " HTTP/1.1\r\n" +
+				"Host: " + rsb_host + "\r\n" +
+				"User-Agent: ESP32_Zac_EPaper\r\n" +
+				"Connection: close\r\n\r\n");
+	client.print(String("GET ") + full_path + strPageNum + " HTTP/1.1\r\n" +
 				"Host: " + rsb_host + "\r\n" +
 				"User-Agent: ESP32_Zac_EPaper\r\n" +
 				"Connection: close\r\n\r\n");
@@ -328,6 +332,7 @@ ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
 			} // end pixel
 			int16_t yrow = (flip ? h - row - 1 : row);
 			// display.writeImage(output_row_mono_buffer, output_row_color_buffer, x, yrow, w, 1);
+      Serial.println("writing to screen buffer");
       memcpy(screenBuffer.output_row_mono_buffer[yrow], output_row_mono_buffer, display_width * sizeof(uint8_t));
       memcpy(screenBuffer.output_row_color_buffer[yrow], output_row_color_buffer, display_width  * sizeof(uint8_t));
       } // end line
