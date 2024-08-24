@@ -7,7 +7,7 @@
 
 	let stockPages = 1; // Home and QR
 	let pages = stockPages + data.messages.length
-	let currentPage = data.page || 0;
+	let currentPage = isNaN(data.page) ? false : data.page;
 	const setTime = () => {
 		return new Date().toLocaleString('en-NZ', {
 		hour: 'numeric',
@@ -25,6 +25,7 @@
 <div class="flex gap-[2px] h-full overflow-hidden">
 	<div class="col bg-black text-white w-[25px] shrink-0 h-full rounded p-[2px] flex flex-col">
 		<div class="grow py-[5px] relative mx-auto text-sm">
+			{#if currentPage !== false}
 				<!-- Sidebar scroller -->
 				<div class="w-[9px] text-center bg-white h-full rounded-full relative overflow-clip">
 					<div style:width="calc(100% - 2px)" class="bg-black left-0 right-0 mx-auto rounded-full absolute transition leading-none flex items-center text-center justify-center numberShadow"
@@ -34,15 +35,16 @@
 					{currentPage + 1}
 				</div>
 				</div>
+			{/if}
 		</div>
 		<div class="qrHolder w-[21px] h-[21px]">
 			<img class="mx-auto w-[21px] h-[21px]" src={data.qr} alt="QR Code"  />
 		</div>
 	</div>
 	<div class="col grow overflow-hidden relative p-[2px]">
-		<div class="header absolute flex gap-[2px] text-sm justify-end w-full right-[2px]">
+		<!-- <div class="header absolute flex gap-[2px] text-sm justify-end w-full right-[2px]">
 			{time}
-		</div>
+		</div> -->
 		{@render children()}
 	</div>
 </div>
