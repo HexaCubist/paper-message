@@ -6,17 +6,25 @@
 #include <GxEPD2_BW.h>
 #include <GxEPD2_3C.h>
 
-
+#ifdef DISPLAY_COLOUR
+#define GxEPD2_DISPLAY_CLASS GxEPD2_3C
 // select the display class (only one), matching the kind of display panel
+#else
 #define GxEPD2_DISPLAY_CLASS GxEPD2_BW
-//#define GxEPD2_DISPLAY_CLASS GxEPD2_3C
+
 //#define GxEPD2_DISPLAY_CLASS GxEPD2_4C
 //#define GxEPD2_DISPLAY_CLASS GxEPD2_7C
 
+#endif
+
+#ifdef DISPLAY_COLOUR
+
 // THIS IS THE CORRECT ONE FOR RED
 #define GxEPD2_DRIVER_CLASS GxEPD2_290_C90c // GDEM029C90  128x296, SSD1680, (FPC-7519 rev.b)
+#else
 // THIS ONE FOR BLACK AND WHITE
-// #define GxEPD2_DRIVER_CLASS GxEPD2_290_BS // DEPG0290BS  128x296, SSD1680, (FPC-7519 rev.b)
+#define GxEPD2_DRIVER_CLASS GxEPD2_290_BS // DEPG0290BS  128x296, SSD1680, (FPC-7519 rev.b)
+#endif
 
 // somehow there should be an easier way to do this
 #define GxEPD2_BW_IS_GxEPD2_BW true

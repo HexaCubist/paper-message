@@ -64,8 +64,6 @@ UserInfo getUserInfo(const char* api_token) {
         json += (char)client.read();
     }
 
-    Serial.print("json:");
-    Serial.println(json);
 
     ui = parseUserInfo(json.c_str());
     return ui;
