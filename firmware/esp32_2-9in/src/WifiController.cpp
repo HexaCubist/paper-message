@@ -13,7 +13,7 @@ void saveConfigCallback() {
     shouldSaveConfig = true;
 }
 
-bool wifiInit() {
+bool wifiInit(bool force_config) {
     if (!EEPROM.begin(512)) {
         Serial.println("Failed to initialise EEPROM");
         return false;
@@ -28,7 +28,12 @@ bool wifiInit() {
     wm.addParameter(custom_token);
     wm.setAPCallback(configModeCallback);
 
-    bool res = wm.autoConnect("RSB-Device");
+    bool res;
+    if (force_config)  {
+        res = wm.startConfigPortal("RSB-Device");
+    } else {
+        res = wm.autoConnect("RSB-Device");
+    }
 
     if (!res) {
         Serial.println("Failed to connect");

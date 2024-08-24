@@ -1,13 +1,9 @@
 #include <ScreenBuffer.h>
 
 struct ScreenBuffer* initScreenBuffer() {
-    struct ScreenBuffer* sb = (ScreenBuffer*)malloc(sizeof *sb);
-    sb->output_row_mono_buffer = (uint8_t**)malloc(display_height * sizeof(uint8_t*));
-    sb->output_row_color_buffer = (uint8_t**)malloc(display_height * sizeof(uint8_t*));
-    for(int i = 0; i < display_height; i++){
-        sb->output_row_mono_buffer[i] = (uint8_t*)malloc(display_width * sizeof(uint8_t));
-        sb->output_row_color_buffer[i] = (uint8_t*)malloc(display_width * sizeof(uint8_t));
-    }
+    ScreenBuffer *sb;
+    sb->output_row_mono_buffer = (uint8_t **) ps_malloc(display_m_height * display_m_width * sizeof(uint8_t));
+    sb->output_row_color_buffer = (uint8_t **) ps_malloc(display_m_height * display_m_width * sizeof(uint8_t));
     sb->defined = false;
     return sb;
 }

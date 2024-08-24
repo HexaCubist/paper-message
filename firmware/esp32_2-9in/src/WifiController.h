@@ -11,7 +11,7 @@ void configModeCallback (WiFiManager *myWiFiManager);
 
 void saveConfigCallback();
 
-bool wifiInit();
+bool wifiInit(bool force_config);
 
 void setClock();
 

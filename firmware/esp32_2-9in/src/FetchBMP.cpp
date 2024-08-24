@@ -69,7 +69,7 @@ uint32_t read8n(WiFiClient& client, uint8_t* buffer, int32_t bytes)
 }
 
 // const char* host, const char* path, const char* filename, const char* fingerprint, int16_t x, int16_t y,
-ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
+bool loadBitmap(ScreenBuffer *screenBuffer, uint8_t page_num, char* api_token, bool with_color) {
 
   // path + user_token + pagesEndpoint
   char full_path [64];
@@ -82,7 +82,6 @@ ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
 
 
   // // Screen buffer
-  EXT_RAM_ATTR ScreenBuffer screenBuffer;
   // memset(output_row_mono_buffer, 0, sizeof(uint8_t) * display_height * display_width);
   // memset(output_row_color_buffer, 0, sizeof(uint8_t) * display_height * display_width);
 
@@ -104,7 +103,7 @@ ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
 	if (!client.connect(rsb_host, httpsPort))
 	{
 		Serial.println("connection failed");
-		return screenBuffer;
+		return false;
 	}
 	Serial.print("requesting URL: ");
 	Serial.println(String("https://") + rsb_host + full_path + strPageNum);
@@ -134,7 +133,7 @@ ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
 		break;
 		}
 	}
-	if (!connection_ok) return screenBuffer;;
+	if (!connection_ok) return false;
 	// Parse BMP header
 	//if (read16(client) == 0x4D42) // BMP signature
 	uint16_t signature = 0;
@@ -151,7 +150,7 @@ ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
 
     Serial.print("Invalid file signature on image loaded! Found: ");
     Serial.println(signature, HEX);
-    return screenBuffer;
+    return false;
 	}
     uint32_t fileSize = read32(client);
 		uint32_t creatorBytes = read32(client); (void)creatorBytes; //unused
@@ -333,8 +332,11 @@ ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
 			int16_t yrow = (flip ? h - row - 1 : row);
 			// display.writeImage(output_row_mono_buffer, output_row_color_buffer, x, yrow, w, 1);
       Serial.println("writing to screen buffer");
-      memcpy(screenBuffer.output_row_mono_buffer[yrow], output_row_mono_buffer, display_width * sizeof(uint8_t));
-      memcpy(screenBuffer.output_row_color_buffer[yrow], output_row_color_buffer, display_width  * sizeof(uint8_t));
+      Serial.println(sizeof(output_row_mono_buffer));
+      Serial.println(yrow);
+	Serial.println((*screenBuffer).output_row_mono_buffer[yrow][0]);
+      // memcpy((*screenBuffer).output_row_mono_buffer[yrow], output_row_mono_buffer, sizeof(output_row_mono_buffer));
+      // memcpy((*screenBuffer).output_row_color_buffer[yrow], output_row_color_buffer, sizeof(output_row_mono_buffer));
       } // end line
 			Serial.print("downloaded in "); Serial.print(millis() - startTime); Serial.println(" ms");
 			Serial.print("bytes read "); Serial.println(bytes_read);
@@ -346,7 +348,7 @@ ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
 		Serial.println("bitmap format not handled.");
 	}
 
-  screenBuffer.defined = true;
+  (*screenBuffer).defined = true;
 
-  return screenBuffer;
+  return true;
 }

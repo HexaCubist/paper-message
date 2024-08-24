@@ -14,4 +14,4 @@ void displayInit();
 
 void showBitmapFrom_HTTPS(const char* host, const char* path, const char* filename, const char* fingerprint, int16_t x, int16_t y, bool with_color);
 
-void renderScreen(ScreenBuffer& screenBuffer);
+void renderScreen(ScreenBuffer *screenBuffer);
