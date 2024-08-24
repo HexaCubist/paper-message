@@ -4,6 +4,9 @@
   </div>
   <div>
     <p class="daydream">Booting...</p>
-    <p class="text-sm">If something doesn't happen in 10 seconds, cry.</p>
+    <p class="text-sm">
+      If something doesn't happen in 10 seconds, cry.<br /> You can also hold down
+      the power button while I start up to reset.
+    </p>
   </div>
 </div>
