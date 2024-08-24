@@ -48,6 +48,7 @@ export const renderHandle: Handle = async ({ event, resolve }) => {
     await page.close();
     // const transformedBody = await transformPageChunk({ html: body });
     const img = await Jimp.read(Buffer.from(screenshot));
+    img.rotate(90);
     const onebit = encode({
       data: img.bitmap.data,
       width: img.bitmap.width,
