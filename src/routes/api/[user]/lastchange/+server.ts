@@ -1,4 +1,4 @@
-import { error, json } from "@sveltejs/kit";
+import { error, json, text } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import type { messageDataType } from "../../../constants";
 
@@ -14,11 +14,5 @@ export interface userDataType {
 }
 
 export const GET: RequestHandler = ({ url, locals }) => {
-  return json({
-    version: APP_VERSION,
-    last_message_at: locals.messages[0]?.createdAt.valueOf() || "",
-    message_count: locals.messages.length,
-    total_pages: Object.keys(allPages).length - 1 + locals.messages.length,
-    userID: locals.userID,
-  } as userDataType);
+  return text(locals.messages[0]?.createdAt.valueOf().toString());
 };
