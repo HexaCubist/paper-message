@@ -14,7 +14,10 @@ void saveConfigCallback() {
 }
 
 bool wifiInit() {
-    EEPROM.begin(512);
+    if (!EEPROM.begin(512)) {
+        Serial.println("Failed to initialise EEPROM");
+        return false;
+    }
     Serial.println(EEPROM.readString(0));
 
     WiFiManager wm;
