@@ -39,13 +39,20 @@
   let showComplete = $state(true);
 
   let adminOverride = $state(false);
+
+  let showPreview = $state(false);
 </script>
 
 <!-- Preview box -->
-<div class="p-4 relative">
+<div class="p-4 pt-0 relative">
   <div class="hidden sm:contents">
-    <FrontFace page={0} live={true} bind:previewData userData={data.user} />
+    {#if showPreview}
+      <FrontFace page={0} live={true} bind:previewData userData={data.user} />
+    {/if}
   </div>
+  {#if !showPreview}
+    <img src="/logo-colour-min.png" alt="" class="w-64 max-w-full mx-auto" />
+  {/if}
   {#if !canSend && showComplete}
     <button
       class="preview-complete"
@@ -67,7 +74,7 @@
     </button>
   {/if}
 </div>
-<label class="form-control block max-w-screen-md mx-auto">
+<div class="form-control block max-w-screen-md mx-auto">
   <div class="label">
     <span class="label-text">
       {#if charsLeft > 0}
@@ -286,7 +293,15 @@
       </div>
     </div>
   {/if}
-</label>
+  <div class="mt-20 text-sm flex justify-between">
+    <p>
+      Thanks for being a bestie! Made with ❤️ by
+      <a target="_blank" href="https://zac.nz">Zac</a> and
+      <a target="_blank" href="https://jmw.nz">Jasper</a> M-W
+    </p>
+    <p>Illustrations by Anna Mason</p>
+  </div>
+</div>
 
 <style lang="postcss">
   .preview-complete {

@@ -37,7 +37,11 @@
       {messageData.message}
     </p>
   {:else}
-    <h1 class="text-center">Message Deleted 💔</h1>
+    <h1 class="text-center">Something went wrong 💔</h1>
+    <p class="text-sm text-center">
+      Try changing pages again, or restart the device! Let us know if this keeps
+      happening.
+    </p>
   {/if}
 </div>
 

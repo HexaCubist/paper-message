@@ -10,7 +10,7 @@
 	<div class="navbar bg-base-100 text-base-content border border-black rounded-box">
 		<div class="flex-1">
 			<a href="/" class="btn btn-ghost text-lg hidden sm:flex">Royal Society of Besties</a>
-			<a href="/" class="btn btn-ghost text-lg flex sm:hidden">RBS</a>
+			<a href="/" class="btn btn-ghost text-lg flex sm:hidden">RSB</a>
 		</div>
 		<div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">

@@ -9,9 +9,12 @@
 </script>
 
 {#if data.messages.length}
-  <h1 class="h-full flex flex-col justify-center text-center">
-    <p class="daydream">New Message{data.messages.length > 1 ? "s" : ""}!</p>
-    <p class="text-sm">Press button to read...</p>
+  <h1 class="h-full flex text-center gap-[8px] justify-center">
+    <img src="/logo-colour-bw-min.png" alt="Royal Society of Besties" />
+    <div class="h-full flex flex-col justify-center text-left">
+      <p class="daydream">New Message{data.messages.length > 1 ? "s" : ""}!</p>
+      <p class="text-sm">Press button to read...</p>
+    </div>
   </h1>
 {:else}
   <h1 class="h-full flex flex-col justify-center text-center">
