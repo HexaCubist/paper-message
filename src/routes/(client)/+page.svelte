@@ -37,6 +37,8 @@
   }, 250);
 
   let showComplete = $state(true);
+
+  let adminOverride = $state(false);
 </script>
 
 <!-- Preview box -->
@@ -100,6 +102,7 @@
         },
         body: JSON.stringify({
           message: liveText,
+          ...(adminOverride ? { override: true } : {}),
         }),
       }).catch((e) => {
         console.error(e);
@@ -120,6 +123,16 @@
       maxlength="340"
       required
     ></textarea>
+    {#if data.role === Role.Admin}
+      <label class="label cursor-pointer gap-2">
+        <input
+          type="checkbox"
+          class="toggle toggle-xs"
+          bind:checked={adminOverride}
+        />
+        <span class="label-text text-sm">Send 24hrs back in time</span>
+      </label>
+    {/if}
 
     {#if !canSend && timeTill}
       <progress

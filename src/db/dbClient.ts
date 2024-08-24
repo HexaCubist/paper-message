@@ -11,6 +11,7 @@ import {
   getLastPostTime,
   getNextPostTime,
 } from "../constants";
+import moment from "moment";
 
 const pool = postgres(process.env.AUTH_DRIZZLE_URL!, { max: 1 });
 
@@ -68,10 +69,15 @@ export const getMessages = async (
   return messages;
 };
 
-export const createMessage = async (id: string, message: string) => {
+export const createMessage = async (
+  id: string,
+  message: string,
+  override: string
+) => {
   await db.insert(schema.messages).values({
     message,
     authorId: id,
+    createdAt: override ? moment().subtract(1, "day").toDate() : undefined,
   });
   console.log("Message created");
 };
