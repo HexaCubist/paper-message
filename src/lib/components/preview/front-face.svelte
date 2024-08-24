@@ -128,7 +128,7 @@
               <img
                 src="/api/0/pages/{page}"
                 class="image-preview"
-                width="263.05664"
+                height="263.05664"
                 alt="Page {page}"
                 onload={() => {
                   changing = false;
@@ -209,6 +209,7 @@
   }
   .image-preview {
     @apply mix-blend-multiply;
+    transform: rotate(90deg);
     image-rendering: pixelated;
   }
 
