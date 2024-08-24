@@ -11,6 +11,8 @@ OneButton main_button;
 
 static constexpr int BUZZER_OUTPUT = 16; // GPIO16 (P16)
 
+uint8_t grid_mono_buffer[display_m_height][display_m_width] = {{0}};
+uint8_t grid_color_buffer[display_m_height][display_m_width] = {{0}};
 
 const uint8_t page_num = 0;
 
@@ -58,7 +60,7 @@ void setup() {
     setClock();
 
     Serial.println("Time to test: ");
-    ScreenBuffer screenBuffer;
+
     Serial.println("Time to test: ");
     Serial.println(display_m_height * display_m_width * sizeof(uint8_t));
 
@@ -68,35 +70,18 @@ void setup() {
 
 
 
-    screenBuffer.output_row_mono_buffer = (uint8_t **) malloc(display_m_height * display_m_width * sizeof(uint8_t));
-    Serial.println(ESP.getFreeHeap());
-    Serial.println(ESP.getHeapSize());
-    Serial.println(ESP.getMinFreeHeap());
 
-    screenBuffer.output_row_color_buffer = (uint8_t **) malloc(display_m_height * display_m_width * sizeof(uint8_t));
-        Serial.println(ESP.getFreeHeap());
-    Serial.println(ESP.getHeapSize());
-    Serial.println(ESP.getMinFreeHeap());
 
-    screenBuffer.defined = false;
 
-    Serial.println("Local??: ");
-    (screenBuffer).output_row_color_buffer[0][0] = 10;
-    Serial.println("Local??: ");
-    Serial.print((screenBuffer).output_row_color_buffer[0][0]);
-    Serial.println("Local??: ");
-
-    delay(500);
 
 
     // showBitmapFrom_HTTPS(rsb_host, full_path, strPageNum, fp_rawcontent,0,0, false);
-    bool res = loadBitmap(&screenBuffer, page_num, getApiToken(), false);
+    bool res = loadBitmap(grid_mono_buffer, grid_color_buffer, page_num, getApiToken(), false);
     if (res) {
-        renderScreen(&screenBuffer);
+        renderScreen(grid_mono_buffer, grid_color_buffer);
     } else {
         Serial.println("Failed to load bitmap");
     }
-    freeScreenBuffer(&screenBuffer);
 }
 
 void loop() {

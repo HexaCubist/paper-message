@@ -12,10 +12,10 @@
 
 
 struct ScreenBuffer {
-    uint8_t **output_row_mono_buffer;
-    uint8_t **output_row_color_buffer;
+    uint8_t output_row_mono_buffer[display_m_height][display_m_width];
+    uint8_t output_row_color_buffer[display_m_height][display_m_width];
     bool defined;
 };
 
-struct ScreenBuffer* initScreenBuffer();
+// struct ScreenBuffer* initScreenBuffer();
 void freeScreenBuffer(struct ScreenBuffer* sb);

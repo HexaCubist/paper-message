@@ -17,19 +17,22 @@ GxEPD2_DISPLAY_CLASS<GxEPD2_DRIVER_CLASS, MAX_HEIGHT(GxEPD2_DRIVER_CLASS)> displ
 
 void displayInit() {
 	display.init(115200, true, 2, false); // USE THIS for Waveshare boards with "clever" reset circuit, 2ms reset pulse
-	display.fillScreen(GxEPD_WHITE);
+	// display.fillScreen(GxEPD_WHITE);
+	// display.refresh(true);
 }
 
-void renderScreen(ScreenBuffer *screenBuffer) {
-	display.fillScreen(GxEPD_WHITE);
-	display.firstPage();
-	do {
-		for (int y = 0; y < display.epd2.HEIGHT; y++) {
-			display.drawBitmap(0, y, screenBuffer->output_row_mono_buffer[y], display.epd2.WIDTH, 1, GxEPD_BLACK);
-		}
-	} while (display.nextPage());
+void renderScreen(uint8_t output_row_mono_buffer[display_m_height][display_m_width], uint8_t output_row_color_buffer[display_m_height][display_m_width]) {
 
-	display.refresh();
+	// output_row_mono_buffer[height][width]
+	// output_row_mono_buffer[128   ][296  ]
+
+
+	// display.fillScreen(GxEPD_WHITE);
+	// 	display.drawRect(0, 0, display_m_height, display_m_height, GxEPD_BLACK);
+	for (int y = 0; y < display_m_height; y++) {
+		display.drawBitmap(y, 0, output_row_mono_buffer[y], 1, display_width, GxEPD_BLACK);
+	}
+	display.refresh(true);
 }
 
 
