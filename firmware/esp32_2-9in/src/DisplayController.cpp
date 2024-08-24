@@ -20,15 +20,15 @@ void displayInit() {
 }
 
 void renderScreen(ScreenBuffer& screenBuffer) {
-	display.fillScreen(GxEPD_WHITE);
-	display.firstPage();
-	do {
-		for (int y = 0; y < display.epd2.HEIGHT; y++) {
-			display.drawBitmap(0, y, screenBuffer.output_row_mono_buffer[y], display.epd2.WIDTH, 1, GxEPD_BLACK);
-		}
-	} while (display.nextPage());
+// 	display.fillScreen(GxEPD_WHITE);
+// 	display.firstPage();
+// 	do {
+// 		for (int y = 0; y < display.epd2.HEIGHT; y++) {
+// 			display.drawBitmap(0, y, screenBuffer.output_row_mono_buffer[y], display.epd2.WIDTH, 1, GxEPD_BLACK);
+// 		}
+// 	} while (display.nextPage());
 
-	display.refresh();
+// 	display.refresh();
 }
 
 

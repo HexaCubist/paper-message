@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "DisplayController.h"
 #include "WifiController.h"
+#include <ScreenBuffer.h>
 
 
 
@@ -26,13 +27,13 @@ void setup() {
     setClock();
 
     // showBitmapFrom_HTTPS(rsb_host, full_path, strPageNum, fp_rawcontent,0,0, false);
-    ScreenBuffer screenBuffer = loadBitmap(page_num, getApiToken(), false);
+    loadBitmap(page_num, getApiToken(), false);
     // if (screenBuffer.defined) {
     //     renderScreen(screenBuffer);
     // } else {
     //     Serial.println("Failed to load bitmap");
     // }
-
+    // freeScreenBuffer(&screenBuffer);
 }
 
 void loop() {

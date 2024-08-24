@@ -4,8 +4,8 @@
 const int httpsPort = 443;
 
 uint8_t input_buffer[3 * input_buffer_pixels]; // up to depth 24
-uint8_t output_row_mono_buffer[max_row_width / 8]; // buffer for at least one row of b/w bits
-uint8_t output_row_color_buffer[max_row_width / 8]; // buffer for at least one row of color bits
+uint8_t output_row_mono_buffer[display_width / 8]; // buffer for at least one row of b/w bits
+uint8_t output_row_color_buffer[display_width / 8]; // buffer for at least one row of color bits
 uint8_t mono_palette_buffer[max_palette_pixels / 8]; // palette buffer for depth <= 8 b/w
 uint8_t color_palette_buffer[max_palette_pixels / 8]; // palette buffer for depth <= 8 c/w
 uint16_t rgb_palette_buffer[max_palette_pixels]; // palette buffer for depth <= 8 for buffered graphics, needed for 7-color display
@@ -71,7 +71,7 @@ uint32_t read8n(WiFiClient& client, uint8_t* buffer, int32_t bytes)
 // const char* host, const char* path, const char* filename, const char* fingerprint, int16_t x, int16_t y,
 ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
 
-    // path + user_token + pagesEndpoint
+  // path + user_token + pagesEndpoint
   char full_path [64];
   strcpy(full_path,path);
   strcat(full_path,api_token);
@@ -81,8 +81,11 @@ ScreenBuffer loadBitmap(uint8_t page_num, char* api_token, bool with_color) {
   itoa(page_num,strPageNum,10);
 
 
-  // Screen buffer
-  ScreenBuffer screenBuffer;
+  // // Screen buffer
+  EXT_RAM_ATTR ScreenBuffer screenBuffer;
+  // memset(output_row_mono_buffer, 0, sizeof(uint8_t) * display_height * display_width);
+  // memset(output_row_color_buffer, 0, sizeof(uint8_t) * display_height * display_width);
+
 
 	// Use WiFiClientSecure class to create TLS connection
 	WiFiClientSecure client;
