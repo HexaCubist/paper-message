@@ -10,6 +10,11 @@ import { env } from "$env/dynamic/private";
 import Jimp from "jimp";
 import { encode } from "bmp-ts";
 
+const browser = await puppeteer.launch({
+  args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  defaultViewport: null,
+});
+
 export const renderHandle: Handle = async ({ event, resolve }) => {
   const normPath = normalize(event.url.pathname);
   console.log(
@@ -26,10 +31,6 @@ export const renderHandle: Handle = async ({ event, resolve }) => {
       return res;
     }
     // const body = await res.text();
-    const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      defaultViewport: null,
-    });
     const page = await browser.newPage();
     await page.setViewport({
       width: resolution.w,
@@ -44,7 +45,7 @@ export const renderHandle: Handle = async ({ event, resolve }) => {
       encoding: "binary",
       captureBeyondViewport: false,
     });
-    browser.close();
+    await page.close();
     // const transformedBody = await transformPageChunk({ html: body });
     const img = await Jimp.read(Buffer.from(screenshot));
     const onebit = encode({
