@@ -33,8 +33,8 @@ export const load: LayoutServerLoad = async ({
       margin: 0,
       scale: 1,
       color: {
-        dark: "#ffffff",
-        light: "#000000",
+        dark: "#000000",
+        light: "#ffffff",
       },
     }),
   };
