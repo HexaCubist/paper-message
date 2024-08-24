@@ -12,7 +12,11 @@ import { encode } from "bmp-ts";
 
 export const renderHandle: Handle = async ({ event, resolve }) => {
   const normPath = normalize(event.url.pathname);
-  console.log("Jasper, please fix this: (normPath, path)", normPath, event.url);
+  console.log(
+    "Jasper, please fix this: (normPath, path)",
+    normPath,
+    event.url.href
+  );
   if (
     /^\/?api\/[^\/]+\/pages\/\d/.test(normPath) &&
     !event.url.searchParams.has("live")
