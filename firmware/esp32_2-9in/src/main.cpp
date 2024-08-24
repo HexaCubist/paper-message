@@ -58,24 +58,45 @@ void setup() {
     setClock();
 
     Serial.println("Time to test: ");
-    ScreenBuffer *screenBuffer = initScreenBuffer();
+    ScreenBuffer screenBuffer;
+    Serial.println("Time to test: ");
+    Serial.println(display_m_height * display_m_width * sizeof(uint8_t));
+
+    Serial.println(ESP.getFreeHeap());
+    Serial.println(ESP.getHeapSize());
+    Serial.println(ESP.getMinFreeHeap());
+
+
+
+    screenBuffer.output_row_mono_buffer = (uint8_t **) malloc(display_m_height * display_m_width * sizeof(uint8_t));
+    Serial.println(ESP.getFreeHeap());
+    Serial.println(ESP.getHeapSize());
+    Serial.println(ESP.getMinFreeHeap());
+
+    screenBuffer.output_row_color_buffer = (uint8_t **) malloc(display_m_height * display_m_width * sizeof(uint8_t));
+        Serial.println(ESP.getFreeHeap());
+    Serial.println(ESP.getHeapSize());
+    Serial.println(ESP.getMinFreeHeap());
+
+    screenBuffer.defined = false;
+
     Serial.println("Local??: ");
-    (*screenBuffer).output_row_color_buffer[0][0] = 10;
+    (screenBuffer).output_row_color_buffer[0][0] = 10;
     Serial.println("Local??: ");
-    Serial.print((*screenBuffer).output_row_color_buffer[0][0]);
+    Serial.print((screenBuffer).output_row_color_buffer[0][0]);
     Serial.println("Local??: ");
 
     delay(500);
 
 
     // showBitmapFrom_HTTPS(rsb_host, full_path, strPageNum, fp_rawcontent,0,0, false);
-    loadBitmap(screenBuffer, page_num, getApiToken(), false);
-    if (screenBuffer->defined) {
-        renderScreen(screenBuffer);
+    bool res = loadBitmap(&screenBuffer, page_num, getApiToken(), false);
+    if (res) {
+        renderScreen(&screenBuffer);
     } else {
         Serial.println("Failed to load bitmap");
     }
-    freeScreenBuffer(screenBuffer);
+    freeScreenBuffer(&screenBuffer);
 }
 
 void loop() {

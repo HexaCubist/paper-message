@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "esp32-hal-psram.h"
+#include <Arduino.h>
 
 #define display_height 128
 #define display_width 296
