@@ -44,6 +44,7 @@ export const renderHandle: Handle = async ({ event, resolve }) => {
       encoding: "binary",
       captureBeyondViewport: false,
     });
+    browser.close();
     // const transformedBody = await transformPageChunk({ html: body });
     const img = await Jimp.read(Buffer.from(screenshot));
     const onebit = encode({
