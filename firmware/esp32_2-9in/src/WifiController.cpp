@@ -1,5 +1,6 @@
 #include <WifiController.h>
 
+
 WiFiManagerParameter* custom_token;
 char api_token[64] = "YOUR_API_TOKEN";
 bool shouldSaveConfig = false;
@@ -20,7 +21,7 @@ bool wifiInit(bool force_config) {
     //     return false;
     // }
     // String saved_token = EEPROM.readString(0);
-      if (SPIFFS.begin()) {
+    if (SPIFFS.begin()) {
     Serial.println("mounted file system");
     if (SPIFFS.exists("/config.json")) {
       //file exists, reading and loading

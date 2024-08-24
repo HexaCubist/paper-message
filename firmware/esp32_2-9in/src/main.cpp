@@ -23,7 +23,7 @@ void doubleClick() {
 }
 
 void load_image() {
-    bool res = loadBitmap(grid_mono_buffer, grid_color_buffer, page_num, getApiToken(), false);
+    bool res = loadBitmap(grid_mono_buffer, grid_color_buffer, page_num, getApiToken(), false, &max_page_num);
     if (res) {
         renderScreen(grid_mono_buffer, grid_color_buffer);
     } else {
@@ -79,7 +79,7 @@ void setup() {
     Serial.println(ESP.getHeapSize());
     Serial.println(ESP.getMinFreeHeap());
 
-
+    load_image();
 
 }
 
@@ -87,6 +87,7 @@ void loop() {
     button.update();
     if (button.pressed()) {
         page_num = page_num + 1;
+        load_image();
     }
     delay(10);
 }

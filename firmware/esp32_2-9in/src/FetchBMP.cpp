@@ -69,7 +69,7 @@ uint32_t read8n(WiFiClient& client, uint8_t* buffer, int32_t bytes)
 }
 
 // const char* host, const char* path, const char* filename, const char* fingerprint, int16_t x, int16_t y,
-bool loadBitmap(uint8_t grid_mono_buffer[display_m_height][display_m_width], uint8_t grid_color_buffer[display_m_height][display_m_width], uint8_t page_num, char* api_token, bool with_color) {
+bool loadBitmap(uint8_t grid_mono_buffer[display_m_height][display_m_width], uint8_t grid_color_buffer[display_m_height][display_m_width], uint8_t page_num, char* api_token, bool with_color, uint8_t* max_page_num) {
 
   // path + user_token + pagesEndpoint
   char full_path [64];
