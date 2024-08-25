@@ -34,6 +34,7 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
   event.locals.tokenID = "";
   event.locals.role = Role.Guest;
   event.locals.appMode = APP_MODE;
+  event.locals.thisTermMessages = [];
   //1. Get User from DB
   let id = session?.user?.id;
   let user: userDataType | undefined;
@@ -67,6 +68,12 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
 
   //3. Get messages
   event.locals.messages = await getMessages();
+  if (APP_MODE == AppModes.LimitArrives)
+    event.locals.thisTermMessages = await getMessages(
+      undefined,
+      getLastPostTime().toDate(),
+      new Date()
+    );
 
   //4. Get time the user can next post
   if (APP_MODE == AppModes.LimitSends) {

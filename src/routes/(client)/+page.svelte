@@ -24,7 +24,7 @@
     previewData.message = (e.target as HTMLInputElement)?.value;
   }, 500);
 
-  let liveText = $state("");
+  let liveText = $state(data.lastMessage?.message || "");
   let charsLeft = $derived(140 - liveText.length);
   let sending = $state(false);
 
@@ -100,7 +100,12 @@
   <form
     onsubmit={async (e) => {
       e.preventDefault();
-      if (!canSend && data.role !== Role.Admin) return false;
+      if (
+        !canSend &&
+        data.role !== Role.Admin &&
+        APP_MODE === AppModes.LimitSends
+      )
+        return false;
       sending = true;
       await fetch(`/api/${data.user.userID}/post`, {
         method: "POST",
@@ -126,7 +131,12 @@
       placeholder="Your message here..."
       bind:value={liveText}
       onkeyup={(e) => updateText(e)}
-      disabled={sending || !(canSend || data.role === Role.Admin)}
+      disabled={sending ||
+        !(
+          canSend ||
+          data.role === Role.Admin ||
+          APP_MODE === AppModes.LimitArrives
+        )}
       maxlength="340"
       required
     ></textarea>
@@ -151,10 +161,19 @@
     <button
       type="submit"
       class="btn btn-primary mt-2 transition"
-      disabled={sending || !(canSend || data.role === Role.Admin)}
+      disabled={sending ||
+        !(
+          canSend ||
+          data.role === Role.Admin ||
+          APP_MODE === AppModes.LimitArrives
+        )}
     >
       {#if sending}
         Sending...
+      {:else if data.lastMessage && APP_MODE === AppModes.LimitArrives}
+        Edit (arrives {moment(getNextPostTime()).format("h:mma")} - {moment(
+          getNextPostTime()
+        ).fromNow()})
       {:else if canSend}
         Send
         {#if APP_MODE === AppModes.LimitSends}

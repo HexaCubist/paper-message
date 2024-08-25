@@ -18,6 +18,9 @@ export const load: LayoutServerLoad = async ({ fetch, locals }) => {
     appMode: locals.appMode,
     nextTime: locals.nextTime,
     tokenID: locals.tokenID,
+    lastMessage: locals.thisTermMessages.find(
+      (m) => m.authorId === locals.userID
+    ),
     ...(locals.role === Role.Admin
       ? {
           messages: await getMessages(undefined, new Date(0), new Date()),

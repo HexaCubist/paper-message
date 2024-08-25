@@ -82,6 +82,23 @@ export const createMessage = async (
   console.log("Message created");
 };
 
+export const editMessage = async (
+  authorId: string,
+  messageID: number,
+  message: string,
+  override: string
+) => {
+  await db
+    .update(schema.messages)
+    .set({
+      message,
+      authorId: authorId,
+      createdAt: override ? moment().subtract(1, "day").toDate() : undefined,
+    })
+    .where(eq(schema.messages.id, messageID));
+  console.log("Message created");
+};
+
 export const clearMessages = async (userID?: string) => {
   if (userID !== undefined)
     await db

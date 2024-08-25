@@ -12,6 +12,7 @@ declare global {
       nextTime: number;
       appMode: AppModes;
       role: Role;
+      thisTermMessages: messageDataType[];
     }
     // interface PageData {}
     // interface PageState {}
