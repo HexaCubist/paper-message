@@ -1,6 +1,7 @@
 <script lang="ts">
   import FrontFace from "$lib/components/preview/front-face.svelte";
   import debounce from "debounce";
+  import numConvert from "number-to-words";
   import {
     APP_MODE,
     AppModes,
@@ -217,6 +218,16 @@
         </div>
       </div>
     </div>
+    <p class="mt-10">
+      <span class="capitalize">
+        {numConvert.toWords(data.userList.length)}
+      </span> folk have logged in and gained access:
+    </p>
+    <ul class="list-disc list-inside mt-2 text-[12px]">
+      {#each data.userList as user}
+        <li>{user}</li>
+      {/each}
+    </ul>
   </form>
   {#if data.role === Role.Admin}
     <!-- Admin section -->

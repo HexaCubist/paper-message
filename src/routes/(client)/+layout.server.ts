@@ -1,5 +1,5 @@
 import { Role } from "../../constants";
-import { getMessages } from "../../db/dbClient";
+import { getMessages, userEmailList } from "../../db/dbClient";
 import type { userDataType } from "../api/[user]/+server";
 import type { LayoutServerLoad } from "./$types";
 
@@ -15,6 +15,8 @@ export const load: LayoutServerLoad = async ({ fetch, locals }) => {
     )) as userDataType,
     account: session.user,
     role: locals.role,
+    // Get full list of users
+    userList: await userEmailList("name"),
     appMode: locals.appMode,
     nextTime: locals.nextTime,
     tokenID: locals.tokenID,

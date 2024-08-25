@@ -10,6 +10,7 @@ import {
   AppModes,
   getLastPostTime,
   getNextPostTime,
+  type userDataType,
 } from "../constants";
 import moment from "moment";
 
@@ -131,4 +132,12 @@ export const ensureTokens = async () => {
         .where(eq(schema.users.id, user.id));
     }
   }
+};
+
+// Users list
+export const userEmailList = async (
+  resultType: keyof userDataType = "name"
+) => {
+  const allUsers = await db.query.users.findMany();
+  return allUsers.map((u) => u[resultType]);
 };
