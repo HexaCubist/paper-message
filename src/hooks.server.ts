@@ -65,7 +65,7 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
       ? Role.Admin
       : Role.User;
   event.locals.userID = id;
-  event.locals.tokenID = user.token;
+  event.locals.tokenID = user.deviceToken;
 
   //3. Get messages
   event.locals.messages = await getMessages();

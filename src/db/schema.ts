@@ -8,6 +8,7 @@ import {
   serial,
   varchar,
   uniqueIndex,
+  uuid,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "@auth/core/adapters";
 import { relations } from "drizzle-orm";
@@ -22,13 +23,10 @@ export const users = pgTable(
     email: text("email").unique(),
     emailVerified: timestamp("emailVerified", { mode: "date" }),
     image: text("image"),
-    token: text("token")
-      .$defaultFn(() => crypto.randomUUID())
-      .notNull()
-      .unique(),
+    deviceToken: uuid("deviceToken").defaultRandom().notNull(),
   },
   (table) => ({
-    tokenIndex: uniqueIndex("token_index").on(table.token),
+    tokenIndex: uniqueIndex("token_index").on(table.deviceToken),
   })
 );
 

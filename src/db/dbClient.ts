@@ -34,7 +34,7 @@ export const getUserFromEmail = async (email: string) => {
 
 export const getUserFromToken = async (token: string) => {
   const foundUser = await db.query.users.findFirst({
-    where: eq(schema.users.token, token),
+    where: eq(schema.users.deviceToken, token),
   });
   return foundUser;
 };
@@ -122,7 +122,7 @@ process.on("sveltekit:shutdown", async (reason) => {
 export const ensureTokens = async () => {
   const users = await db.query.users.findMany();
   for (const user of users) {
-    if (!user.token) {
+    if (!user.deviceToken) {
       console.log("Creating token for user", user.id);
       await db
         .update(schema.users)
