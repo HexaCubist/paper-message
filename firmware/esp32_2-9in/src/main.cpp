@@ -4,6 +4,7 @@
 #include <ScreenBuffer.h>
 #include "Bounce2.h"
 #include <UserInfo.h>
+#include <soc/rtc_cntl_reg.h>
 
 
 static constexpr int BUTTON_INPUT = 4; // GPIO4 (P4)
@@ -22,6 +23,7 @@ UserInfo userInfo;
 ulong lastCheckedTimestamp = 0;
 uint64_t lastRenderedTimestamp = 0;
 
+
 void doubleClick() {
   Serial.println("x2");
 }
@@ -29,7 +31,7 @@ void doubleClick() {
 void load_image() {
     bool res = loadBitmap(grid_mono_buffer, grid_color_buffer, page_num, getApiToken(), false, &max_page_num);
     if (res) {
-        renderScreen(grid_mono_buffer, grid_color_buffer);
+        renderLineByLine(grid_mono_buffer, grid_color_buffer);
     } else {
         Serial.println("Failed to load bitmap");
     }
@@ -42,6 +44,9 @@ void load_image() {
 
 void setup() {
     Serial.begin(115200);
+
+    // Disable brownout detector
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // "Solution"
 
     button.attach( BUTTON_INPUT, INPUT_PULLUP );
     button.interval(5); 
@@ -84,7 +89,14 @@ void setup() {
     Serial.println(ESP.getMinFreeHeap());
 
 
-    userInfo = getUserInfo(getApiToken());
+    bool res = getUserInfo(getApiToken(), &userInfo);
+    if (!res) {
+        Serial.println("Failed to get user info");
+        displayError("Failed connection, trying anyway....");
+        delay(1000);
+        return;
+    }
+
     lastRenderedTimestamp = userInfo.last_message_at;
     max_page_num = userInfo.total_pages;
     load_image();
@@ -94,14 +106,18 @@ void setup() {
 void loop() {
     button.update();
     if (button.pressed()) {
-        Serial.println();
+        Serial.print("\nMax_page_num:");
+        Serial.println(max_page_num);
         page_num = (page_num + 1) % max_page_num;
         load_image();
-        Serial.print("Waiting for updates");
+        Serial.print("Loaded from button push");
     }
 
     if (millis() - lastCheckedTimestamp > 1500) {
-        userInfo = getUserInfo(getApiToken());
+        bool res = getUserInfo(getApiToken(), &userInfo);
+        if (!res) {
+            return;
+        }
         max_page_num = userInfo.total_pages;
 
         lastCheckedTimestamp = millis();
@@ -110,6 +126,11 @@ void loop() {
 
         if (userInfo.last_message_at != lastRenderedTimestamp) {
             Serial.println();
+
+            Serial.print("New message at: ");
+            Serial.println(userInfo.last_message_at);
+            Serial.print("Old message at: ");
+            Serial.println(lastRenderedTimestamp);
             load_image();
             lastRenderedTimestamp = userInfo.last_message_at;
             Serial.print("Waiting for updates");

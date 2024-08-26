@@ -7,7 +7,7 @@ bool shouldSaveConfig = false;
 
 void configModeCallback(WiFiManager* myWiFiManager) {
     Serial.println("config mode");
-    renderStatic(IMAGE_WIFI);
+    renderBuffer(IMAGE_WIFI, UpdateMode::LiveUpdate);
 }
 
 void saveConfigCallback() {
