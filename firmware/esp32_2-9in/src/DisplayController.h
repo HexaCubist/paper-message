@@ -6,14 +6,23 @@
 #include <Config.h>
 #include <FetchBMP.h>
 #include <images/boot.h>
+#include <images/fail.h>
+
 #include <DisplayDefinitions.h>
+#include <Fonts/FreeMonoBold9pt7b.h>
 
 
+enum UpdateMode {
+    FullRefresh,
+    LiveUpdate,
+    NoUpdate
+};
 
 void displayInit();
 
-void showBitmapFrom_HTTPS(const char* host, const char* path, const char* filename, const char* fingerprint, int16_t x, int16_t y, bool with_color);
 
-void renderScreen(uint8_t output_row_mono_buffer[display_m_height][display_m_width], uint8_t output_row_color_buffer[display_m_height][display_m_width]);
+void renderLineByLine(uint8_t output_row_mono_buffer[display_m_height][display_m_width], uint8_t output_row_color_buffer[display_m_height][display_m_width]);
 
-void renderStatic(const unsigned char crazy[display_m_height * display_m_width]);
+void renderBuffer(const unsigned char image_buffer[display_m_height * display_m_width], UpdateMode update_mode);
+
+void displayError(char* message);

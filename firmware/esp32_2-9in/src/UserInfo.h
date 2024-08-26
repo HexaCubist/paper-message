@@ -12,8 +12,16 @@ struct UserInfo {
     uint8_t message_count;
     uint8_t total_pages;
     char userID[36];
+
+    UserInfo() {
+        strcpy(version, "");
+        last_message_at = 0;
+        message_count = 0;
+        total_pages = 0;
+        strcpy(userID, "");
+    }
 };
 
-UserInfo parseUserInfo(const char* json);
+bool parseUserInfo(const char* json, UserInfo *ui);
 
-UserInfo getUserInfo(const char* api_token);
+bool getUserInfo(const char* api_token, UserInfo *ui);

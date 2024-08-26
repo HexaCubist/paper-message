@@ -1,38 +1,35 @@
 #include "UserInfo.h"
 
 
-UserInfo parseUserInfo(const char* json) {
-    UserInfo ui;
-
+bool parseUserInfo(const char* json, UserInfo *ui) {
     StaticJsonDocument<200> doc;
     DeserializationError error = deserializeJson(doc, json);
 
     if (error) {
         Serial.print(F("deserializeJson() failed: "));
         Serial.println(error.c_str());
-        return ui;
+        return false;
     }
 
-    strcpy(ui.version, doc["version"]);
-    ui.last_message_at = doc["last_message_at"];
-    ui.message_count = doc["message_count"];
-    ui.total_pages = doc["total_pages"];
-    strcpy(ui.userID, doc["userID"]);
+    strcpy(ui->version, doc["version"]);
+    ui->last_message_at = doc["last_message_at"];
+    ui->message_count = doc["message_count"];
+    ui->total_pages = doc["total_pages"];
+    strcpy(ui->userID, doc["userID"]);
 
-    return ui;
+    return true;
 }
 
 // Request json from endpoint:
 // https://rsb.nz/api/<token>
-UserInfo getUserInfo(const char* api_token) {
-    UserInfo ui;
+bool getUserInfo(const char* api_token, UserInfo *ui) {
     WiFiClientSecure client;
 
     client.setInsecure();
 
     if (!client.connect(rsb_host, 443)) {
         Serial.println("Connection failed");
-        return ui;
+        return false;
     }
 
     client.print(String("GET ") + path + api_token + " HTTP/1.1\r\n" +
@@ -44,7 +41,7 @@ UserInfo getUserInfo(const char* api_token) {
         if (millis() - timeout > 5000) {
             Serial.println(">>> Client Timeout !");
             client.stop();
-            return ui;
+            return false;
         }
     }
 
@@ -64,7 +61,6 @@ UserInfo getUserInfo(const char* api_token) {
         json += (char)client.read();
     }
 
-
-    ui = parseUserInfo(json.c_str());
-    return ui;
+    Serial.println(json.c_str());
+    return parseUserInfo(json.c_str(), ui);
 }
