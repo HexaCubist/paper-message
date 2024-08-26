@@ -5,6 +5,7 @@
 #include "Bounce2.h"
 #include <UserInfo.h>
 #include <soc/rtc_cntl_reg.h>
+#include <ImageLoader.h>
 
 
 static constexpr int BUTTON_INPUT = 4; // GPIO4 (P4)
@@ -13,8 +14,6 @@ Bounce2::Button button = Bounce2::Button();
 
 static constexpr int BUZZER_OUTPUT = 16; // GPIO16 (P16)
 
-uint8_t grid_mono_buffer[display_m_height][display_m_width] = {{0}};
-uint8_t grid_color_buffer[display_m_height][display_m_width] = {{0}};
 
 uint8_t page_num = 0;
 uint8_t max_page_num = 5;
@@ -28,14 +27,6 @@ void doubleClick() {
   Serial.println("x2");
 }
 
-void load_image() {
-    bool res = loadBitmap(grid_mono_buffer, grid_color_buffer, page_num, getApiToken(), false, &max_page_num);
-    if (res) {
-        renderLineByLine(grid_mono_buffer, grid_color_buffer);
-    } else {
-        Serial.println("Failed to load bitmap");
-    }
-}
 
 #define SOUND_PWM_CHANNEL   0
 #define SOUND_RESOLUTION    8 // 8 bit resolution
@@ -64,6 +55,10 @@ void setup() {
     Serial.println("Initialising Display...");
 
     displayInit();
+
+    Serial.println("Initialising PSRAM Image Loader...");
+
+    initialiseImageLoader();
 
     Serial.println("Initialising Wifi...");
 
@@ -99,7 +94,8 @@ void setup() {
 
     lastRenderedTimestamp = userInfo.last_message_at;
     max_page_num = userInfo.total_pages;
-    load_image();
+    downloadAllImages(&userInfo, 0, userInfo.total_pages);
+
     Serial.print("Waiting for updates");
 }
 
@@ -109,7 +105,8 @@ void loop() {
         Serial.print("\nMax_page_num:");
         Serial.println(max_page_num);
         page_num = (page_num + 1) % max_page_num;
-        load_image();
+
+        openImage(&userInfo, page_num);
         Serial.print("Loaded from button push");
     }
 
@@ -131,7 +128,9 @@ void loop() {
             Serial.println(userInfo.last_message_at);
             Serial.print("Old message at: ");
             Serial.println(lastRenderedTimestamp);
-            load_image();
+
+            downloadAllImages(&userInfo, 0, userInfo.total_pages);
+            
             lastRenderedTimestamp = userInfo.last_message_at;
             Serial.print("Waiting for updates");
         }

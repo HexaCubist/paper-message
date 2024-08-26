@@ -45,7 +45,7 @@ bool getUserInfo(const char* api_token, UserInfo *ui) {
         }
     }
 
-    // Read all the lines of the reply from server and print them to Serial
+    // Read all the lines of the reply from server, and ignore them
     while(client.available()){
         String line = client.readStringUntil('\r');
 
@@ -60,7 +60,7 @@ bool getUserInfo(const char* api_token, UserInfo *ui) {
     while(client.available()){
         json += (char)client.read();
     }
+    client.stop();
 
-    Serial.println(json.c_str());
     return parseUserInfo(json.c_str(), ui);
 }

@@ -69,7 +69,7 @@ uint32_t read8n(WiFiClient& client, uint8_t* buffer, int32_t bytes)
 }
 
 // const char* host, const char* path, const char* filename, const char* fingerprint, int16_t x, int16_t y,
-bool loadBitmap(uint8_t grid_mono_buffer[display_m_height][display_m_width], uint8_t grid_color_buffer[display_m_height][display_m_width], uint8_t page_num, char* api_token, bool with_color, uint8_t* max_page_num) {
+bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t page_num, char* api_token, bool with_color) {
 
   // path + user_token + pagesEndpoint
   char full_path [64];
@@ -331,8 +331,11 @@ bool loadBitmap(uint8_t grid_mono_buffer[display_m_height][display_m_width], uin
 			} // end pixel
 			int16_t yrow = (flip ? h - row - 1 : row);
 			// display.writeImage(output_row_mono_buffer, output_row_color_buffer, x, yrow, w, 1);
-      memcpy(grid_mono_buffer[yrow], output_row_mono_buffer, sizeof(output_row_mono_buffer));
-      memcpy(grid_color_buffer[yrow], output_row_color_buffer, sizeof(output_row_mono_buffer));
+    //   memcpy(grid_mono_buffer[yrow], output_row_mono_buffer, sizeof(output_row_mono_buffer));
+    //   memcpy(grid_color_buffer[yrow], output_row_color_buffer, sizeof(output_row_mono_buffer));
+		int current_index = yrow * display_m_width;
+		memcpy(mono_buffer + current_index, output_row_mono_buffer, display_m_width);
+
       } // end line
 			Serial.print("downloaded in "); Serial.print(millis() - startTime); Serial.println(" ms");
 			Serial.print("bytes read "); Serial.println(bytes_read);

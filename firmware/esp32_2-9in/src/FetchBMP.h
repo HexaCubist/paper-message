@@ -31,5 +31,4 @@ uint32_t read8n(WiFiClient& client, uint8_t* buffer, int32_t bytes);
         // defined = false;
     // }
 
-
-bool loadBitmap(uint8_t grid_mono_buffer[display_m_height][display_m_width], uint8_t grid_color_buffer[display_m_height][display_m_width], uint8_t page_num, char* api_token, bool with_color, uint8_t* max_page_num);
+bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t page_num, char* api_token, bool with_color);
