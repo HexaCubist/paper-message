@@ -2,17 +2,16 @@
 #include "DisplayController.h"
 #include "WifiController.h"
 #include <ScreenBuffer.h>
-#include "Bounce2.h"
 #include <UserInfo.h>
 #include <soc/rtc_cntl_reg.h>
 #include <ImageLoader.h>
+#include <Buzzer.h>
 
 
 static constexpr int BUTTON_INPUT = 4; // GPIO4 (P4)
-Bounce2::Button button = Bounce2::Button();
+// Bounce2::Button button = Bounce2::Button();
 
 
-static constexpr int BUZZER_OUTPUT = 16; // GPIO16 (P16)
 
 
 uint8_t page_num = 0;
@@ -23,34 +22,33 @@ ulong lastCheckedTimestamp = 0;
 uint64_t lastRenderedTimestamp = 0;
 
 
-void doubleClick() {
-  Serial.println("x2");
+ulong lastButtonPress = 0;
+bool buttonWasPressed = false;
+
+
+
+void buttonPres() {
+    if (millis() - lastButtonPress > 250) {
+        lastButtonPress = millis();
+        buttonWasPressed = true;
+    }
 }
-
-
-#define SOUND_PWM_CHANNEL   0
-#define SOUND_RESOLUTION    8 // 8 bit resolution
-#define SOUND_ON            (1<<(SOUND_RESOLUTION-1)) // 50% duty cycle
-#define SOUND_OFF           0                         // 0% duty cycle
-
 void setup() {
     Serial.begin(115200);
 
     // Disable brownout detector
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // "Solution"
 
-    button.attach( BUTTON_INPUT, INPUT_PULLUP );
-    button.interval(5); 
-    button.setPressedState(LOW); 
-    button.update();
+    // button.attach( BUTTON_INPUT, INPUT_PULLUP );
+    // button.interval(5); 
+    // button.setPressedState(LOW); 
+    // button.update();
 
-    // pinMode(BUZZER_OUTPUT, OUTPUT);
-    // // Passive buzzer, so pwm output
-    // ledcSetup(SOUND_PWM_CHANNEL, 1000, SOUND_RESOLUTION);  // Set up PWM channel
-    // ledcAttachPin(BUZZER_OUTPUT, SOUND_PWM_CHANNEL);                      // Attach channel to pin
-    // ledcWrite(SOUND_PWM_CHANNEL, SOUND_ON);
-    // delay(1000);
-    // ledcWrite(SOUND_PWM_CHANNEL, SOUND_OFF);    delay(1000);
+    pinMode(BUTTON_INPUT, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT), buttonPres, FALLING);
+
+    setupBuzzer(true);
+    playStartupTune();
 
     Serial.println("Initialising Display...");
 
@@ -62,7 +60,7 @@ void setup() {
 
     Serial.println("Initialising Wifi...");
 
-    bool buttonState = button.isPressed();
+    bool buttonState = digitalRead(BUTTON_INPUT) == LOW;
     Serial.print("Button state: ");
     Serial.println(buttonState); 
     if (!wifiInit(buttonState)) {
@@ -96,12 +94,17 @@ void setup() {
     max_page_num = userInfo.total_pages;
     downloadAllImages(&userInfo, 0, userInfo.total_pages);
 
+    // Reset before starting
+    buttonWasPressed = false;
+
     Serial.print("Waiting for updates");
 }
 
 void loop() {
-    button.update();
-    if (button.pressed()) {
+    if (buttonWasPressed) {
+        buttonWasPressed = false;
+        playInputFeedback();
+
         Serial.print("\nMax_page_num:");
         Serial.println(max_page_num);
         page_num = (page_num + 1) % max_page_num;
@@ -110,7 +113,7 @@ void loop() {
         Serial.print("Loaded from button push");
     }
 
-    if (millis() - lastCheckedTimestamp > 1500) {
+    if (millis() - lastCheckedTimestamp > 30*1000) {
         bool res = getUserInfo(getApiToken(), &userInfo);
         if (!res) {
             return;
