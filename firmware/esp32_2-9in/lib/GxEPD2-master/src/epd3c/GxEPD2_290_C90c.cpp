@@ -365,7 +365,8 @@ void GxEPD2_290_C90c::_InitDisplay()
   _writeData(0x05);  
   _writeCommand(0x18); //Read built-in temperature sensor
   _writeData(0x80);  
-  _writeCommand(0x21); //  Display update control
+  // _writeCommand(0x21); //  Display update control
+  _writeCommand(0x21);
   _writeData(0x00);  
   _writeData(0x80);  
   _setPartialRamArea(0, 0, WIDTH, HEIGHT);
@@ -376,6 +377,56 @@ void GxEPD2_290_C90c::_Init_Full()
   _InitDisplay();
   _PowerOn();
 }
+
+// Thanks to @gdanov for the lut_partial
+// https://github.com/gdanov/co2monitor/blob/main/epd.js
+const unsigned char GxEPD2_290_C90c::lut_partial[] PROGMEM = {
+
+// L0 black 0x40 => 0b01000000
+	0x40, 0x40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
+	// L1 white 0x80 => 0b10000000
+	0x80, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
+	// L2 red using 0b11 for VS is the trick
+	//0x40, 0x40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 
+	// the 3rd phase is the important one
+	// black -> red is hard
+	0x80, 0xFF, 0xFF, 0 ,0 ,0 , 0, 0, 0, 0, 0, 0, //
+	// L3 = L2 !!! but currently not used hopefully
+	0, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+	// L4 ??
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+	// 60 Phase 0 TP[0A] TP[0B] SR[0AB] TP[0C] TP[0D] SR[0CD] RP[0]
+	0x04, 0, 0, 0, 0, 0, 0x1,//
+	// 67 Phase 1
+	0x0A, 0, 0, 0, 0, 0, 2,//
+	// 74 Phase 2
+	//0x1, 0, 0, 0, 0, 0, 0,// original
+	// stress on phase #3 because I rely on it for RED and it requires more time to pop up
+	0x0A, 0x0A, 0 ,0x0A, 0x0A, 2 , 0x02,//
+	// 81 Phase 3
+	0, 0, 0, 0, 0, 0, 0,//
+	// 88 Phase 4
+	0, 0, 0, 0, 0, 0, 0,//
+	// 95 Phase 5
+	0, 0, 0, 0, 0, 0, 0,//
+	// 102 Phase 6
+	0, 0, 0, 0, 0, 0, 0,//
+	// 109 Phase 7
+	0, 0, 0, 0, 0, 0, 0,//
+	// 116 Phase 8
+	0, 0, 0, 0, 0, 0, 0,//
+	// 123 Phase 9
+	0, 0, 0, 0, 0, 0, 0,//
+	// 130 Phase 10
+	0, 0, 0, 0, 0, 0, 0,//
+	// 137 Phase 11
+	0, 0, 0, 0, 0, 0, 0,//
+	// 144 FR[0 - 11]
+	0x22, 0x22, 0x22, 0x22, 0x22, 0x22
+	// 150
+	, 0, 0, 0
+};
+
 
 void GxEPD2_290_C90c::_Init_Part()
 {
@@ -393,8 +444,14 @@ void GxEPD2_290_C90c::_Update_Full()
 
 void GxEPD2_290_C90c::_Update_Part()
 {
+    Serial.println("Update Part");
+      _writeCommand(0x32);
+  _writeDataPGM(lut_partial, sizeof(lut_partial));
+  _using_partial_mode = true;
+
+
   _writeCommand(0x22);
-  _writeData(0xf7);
+  _writeData(0xcc);
   _writeCommand(0x20);
   _waitWhileBusy("_Update_Part", partial_refresh_time);
 }

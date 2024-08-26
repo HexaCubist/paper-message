@@ -399,6 +399,8 @@ void GxEPD2_290_BS::_Update_Full()
 {
   _using_partial_mode = false;
   _writeCommand(0x22);
+    Serial.println("Update...");
+
   _writeData(0xf7);
   _writeCommand(0x20);
   _waitWhileBusy("_Update_Full", full_refresh_time);

@@ -43,6 +43,7 @@ void renderScreen(uint8_t output_row_mono_buffer[display_m_height][display_m_wid
 
 void renderStatic(const unsigned char crazy[display_m_height * display_m_width]) {
 	display.drawImage(crazy, 0, 0, display_width, display_height, false);
+	
 
 }
 

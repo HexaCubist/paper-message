@@ -70,6 +70,7 @@ class GxEPD2_290_C90c : public GxEPD2_EPD
     void _Init_Part();
     void _Update_Full();
     void _Update_Part();
+    static const unsigned char lut_partial[];
 };
 
 #endif
