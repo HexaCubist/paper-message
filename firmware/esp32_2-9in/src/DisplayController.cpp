@@ -11,7 +11,7 @@
 
 
 
-GxEPD2_DISPLAY_CLASS<GxEPD2_DRIVER_CLASS, MAX_HEIGHT(GxEPD2_DRIVER_CLASS)> display(GxEPD2_DRIVER_CLASS(/*CS=5*/ 5, /*DC=*/ 0, /*RST=*/ 2, /*BUSY=*/ 15)); // my suggested wiring and proto board
+DISPLAY_TYPE display(GxEPD2_DRIVER_CLASS(/*CS=5*/ 5, /*DC=*/ 0, /*RST=*/ 2, /*BUSY=*/ 15)); // my suggested wiring and proto board
 
 const char BootText[] = FIRMWARE_VERSION;
 
@@ -44,11 +44,13 @@ void displayInit() {
 }
 
 void displayError(char* message) {
-	display.init(115200, true, 2, false); // USE THIS for Waveshare boards with "clever" reset circuit, 2ms reset pulse
 
-	renderBuffer(IMAGE_FAIL, UpdateMode::FullRefresh);
+	// renderBuffer(IMAGE_FAIL, UpdateMode::LiveUpdate);
 	display.setCursor(0, 0);
 	display.fillScreen(GxEPD_WHITE);
+	display.setRotation(0);
+
+	display.drawBitmap(0,0,IMAGE_FAIL, display_width, display_height, GxEPD_WHITE, GxEPD_BLACK);
 	display.setRotation(3);
 	display.setFont(&FreeMonoBold9pt7b);
 	display.setTextColor(GxEPD_BLACK);
@@ -61,13 +63,7 @@ void displayError(char* message) {
     display.print(message);
 
 
-	// Align to controller grid
-	uint16_t x_r = (x/8) * 8;
-	uint16_t y_r = ((y-tbh)/8) * 8;
-	uint16_t w_r = tbw + (x - x_r);
-	uint16_t h_r = tbh + (y - y_r);
-
-	display.displayWindow(x_r,y_r,w_r,h_r);
+	display.display(true);
 
 }
 
@@ -98,3 +94,9 @@ void renderBuffer(const unsigned char image_buffer[display_m_height * display_m_
 	}
 }
 
+
+// Use with caution, returns a reference to the display class
+
+DISPLAY_TYPE* getRawDisplay() {
+	return &display;
+}

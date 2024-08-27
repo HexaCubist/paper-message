@@ -2,7 +2,7 @@
 
 
 bool parseUserInfo(const char* json, UserInfo *ui) {
-    StaticJsonDocument<200> doc;
+    StaticJsonDocument<250> doc;
     DeserializationError error = deserializeJson(doc, json);
 
     if (error) {

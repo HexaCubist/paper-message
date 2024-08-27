@@ -30,27 +30,30 @@ void setupBuzzer(bool buzzerEnable) {
 
 }
 
-void playStartupTune() {
-    if (!buzzer_enabled) {return;}
+void playStartupTune(bool successful) {
+    if (successful) {
+        playTone(TONE_BASE_FREQ, 100);
+        delay(100);
+        playTone(TONE_HIGH_FREQ, 100);
+    } else {
+        playTone(TONE_HIGH_FREQ, 100);
+        delay(100);
+        playTone(TONE_BASE_FREQ, 100);
+        delay(100);
+        playTone(TONE_BASE_FREQ, 200);
 
-
-    ledcChangeFrequency(SOUND_PWM_CHANNEL, TONE_BASE_FREQ, SOUND_RESOLUTION);
-    ledcWrite(SOUND_PWM_CHANNEL, SOUND_ON_QUIET);
-    delay(100);
-    ledcWrite(SOUND_PWM_CHANNEL, SOUND_OFF);
-    delay(100);
-    ledcChangeFrequency(SOUND_PWM_CHANNEL, TONE_HIGH_FREQ, SOUND_RESOLUTION);
-    ledcWrite(SOUND_PWM_CHANNEL, SOUND_ON_QUIET);
-    delay(100);
-    ledcWrite(SOUND_PWM_CHANNEL, SOUND_OFF);
+    }
 
 }
 void playInputFeedback() {
+    playTone(TONE_BASE_FREQ, 50);
+}
+
+void playTone(int freq, int ms) {
     if (!buzzer_enabled) {return;}
 
-    ledcChangeFrequency(SOUND_PWM_CHANNEL, TONE_BASE_FREQ, SOUND_RESOLUTION);
-    ledcWrite(SOUND_PWM_CHANNEL, SOUND_ON);
+    ledcChangeFrequency(SOUND_PWM_CHANNEL, freq, SOUND_RESOLUTION);
+    ledcWrite(SOUND_PWM_CHANNEL, SOUND_ON_QUIET);
     delay(50);
     ledcWrite(SOUND_PWM_CHANNEL, SOUND_OFF);
-
 }

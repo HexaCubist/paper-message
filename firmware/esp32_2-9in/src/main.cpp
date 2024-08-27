@@ -48,41 +48,48 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT), buttonPres, FALLING);
 
     setupBuzzer(true);
-    playStartupTune();
 
     Serial.println("Initialising Display...");
-
+    long display_startup_time = millis();
     displayInit();
+    Serial.print("Display initialised in ");
+    long time_taken = millis() - display_startup_time;
+    Serial.print(time_taken);
+    Serial.println("ms");
+    // If the display "initialises" in less than 150ms, it's probably not actually initialising
+    // Thus play sad tune :(
+    playStartupTune(time_taken > 150);
 
-    Serial.println("Initialising PSRAM Image Loader...");
+
+    Serial.println("Initialising Heap Image Loader...");
 
     initialiseImageLoader();
 
+    Serial.printf("Heap available memory:     %8d bytes\n", ESP.getFreeHeap());
     Serial.println("Initialising Wifi...");
 
     bool buttonState = digitalRead(BUTTON_INPUT) == LOW;
     Serial.print("Button state: ");
     Serial.println(buttonState); 
+
     if (!wifiInit(buttonState)) {
         Serial.println("Failed to connect to WiFi");
         Serial.println("Restarting in 5s...");
         delay(5000);
         ESP.restart();
     }
+    Serial.printf("Heap available memory:     %8d bytes\n", ESP.getFreeHeap());
+
 
     setClock();
 
-    Serial.println("Time to test: ");
+    Serial.printf("Heap available memory:     %8d bytes\n", ESP.getFreeHeap());
 
-    Serial.println("Time to test: ");
-    Serial.println(display_m_height * display_m_width * sizeof(uint8_t));
-
-    Serial.println(ESP.getFreeHeap());
-    Serial.println(ESP.getHeapSize());
-    Serial.println(ESP.getMinFreeHeap());
-
+    Serial.println("Getting user info...");
 
     bool res = getUserInfo(getApiToken(), &userInfo);
+    Serial.printf("Heap available memory:     %8d bytes\n", ESP.getFreeHeap());
+
     if (!res) {
         Serial.println("Failed to get user info");
         displayError("Failed connection, trying anyway....");

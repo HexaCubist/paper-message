@@ -9,7 +9,7 @@
 
 // As of writing, takes up 2/3 of the heap
 // 4736 bytes per page
-constexpr uint8_t MAX_PAGES = 20;
+constexpr uint8_t MAX_PAGES = 25;
 
 void initialiseImageLoader();
 

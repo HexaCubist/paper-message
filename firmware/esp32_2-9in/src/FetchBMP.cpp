@@ -68,8 +68,12 @@ uint32_t read8n(WiFiClient& client, uint8_t* buffer, int32_t bytes)
   return bytes - remain;
 }
 
+
+
 // const char* host, const char* path, const char* filename, const char* fingerprint, int16_t x, int16_t y,
 bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t page_num, char* api_token, bool with_color) {
+
+		// Not validating server
 
   // path + user_token + pagesEndpoint
   char full_path [64];
@@ -80,14 +84,13 @@ bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t p
   char strPageNum [10];
   itoa(page_num,strPageNum,10);
 
+	WiFiClientSecure client;
 
   // // Screen buffer
   // memset(output_row_mono_buffer, 0, sizeof(uint8_t) * display_height * display_width);
   // memset(output_row_color_buffer, 0, sizeof(uint8_t) * display_height * display_width);
 
 
-	// Use WiFiClientSecure class to create TLS connection
-	WiFiClientSecure client;
 		
 	bool connection_ok = false;
 	bool valid = false; // valid format to be handled
@@ -95,16 +98,20 @@ bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t p
 	uint32_t startTime = millis();
 	Serial.println(); Serial.print("downloading file \""); Serial.print(strPageNum);  Serial.println("\"");
 	Serial.print("connecting to "); Serial.println(rsb_host);
+
 	
-
-	// Not validating server
-    client.setInsecure();
-
-	if (!client.connect(rsb_host, httpsPort))
-	{
+		Serial.println("connecting to server");
+	client.setInsecure();
+	Serial.println("connecting to server");
+	Serial.println(ESP.getFreeHeap());
+	if (!client.connect(rsb_host, httpsPort)) {
 		Serial.println("connection failed");
 		return false;
 	}
+	Serial.println("connected!");
+
+
+	
 	Serial.print("requesting URL: ");
 	Serial.println(String("https://") + rsb_host + full_path + strPageNum);
   Serial.println(String("GET ") + full_path + strPageNum + " HTTP/1.1\r\n" +
@@ -341,12 +348,12 @@ bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t p
 			Serial.print("bytes read "); Serial.println(bytes_read);
 		}
   }
-	client.stop();
 	if (!valid)
 	{
 		Serial.println("bitmap format not handled.");
 	}
 
+    client.stop();
 
   return true;
 }

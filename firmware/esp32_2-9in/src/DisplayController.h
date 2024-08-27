@@ -11,6 +11,9 @@
 #include <DisplayDefinitions.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 
+#define SIDEBAR_WIDTH 25
+#define SIDEBAR_ROUND 2
+
 
 enum UpdateMode {
     FullRefresh,
@@ -26,3 +29,5 @@ void renderLineByLine(uint8_t output_row_mono_buffer[display_m_height][display_m
 void renderBuffer(const unsigned char image_buffer[display_m_height * display_m_width], UpdateMode update_mode);
 
 void displayError(char* message);
+
+DISPLAY_TYPE* getRawDisplay();
