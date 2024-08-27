@@ -378,14 +378,20 @@ void GxEPD2_290_C90c::_Init_Full()
   _PowerOn();
 }
 
+
+// 5.5s for a normal update here
+// 2s once at max frame rate
+// 20s once a slowest frame rate
+// Note: Enable third phase for Red compatibility, disabled for SPEED
+
 // Thanks to @gdanov for the lut_partial
 // https://github.com/gdanov/co2monitor/blob/main/epd.js
 const unsigned char GxEPD2_290_C90c::lut_partial[] PROGMEM = {
 
 // L0 black 0x40 => 0b01000000
-	0x40, 0x40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
+	0b01000000, 0b01000000, 0b01000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
 	// L1 white 0x80 => 0b10000000
-	0x80, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
+	0x80, 0x80, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
 	// L2 red using 0b11 for VS is the trick
 	//0x40, 0x40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 
 	// the 3rd phase is the important one
@@ -399,10 +405,11 @@ const unsigned char GxEPD2_290_C90c::lut_partial[] PROGMEM = {
 	0x04, 0, 0, 0, 0, 0, 0x1,//
 	// 67 Phase 1
 	0x0A, 0, 0, 0, 0, 0, 2,//
+
 	// 74 Phase 2
-	//0x1, 0, 0, 0, 0, 0, 0,// original
+	0x1, 0, 0, 0, 0, 0, 0,// 
 	// stress on phase #3 because I rely on it for RED and it requires more time to pop up
-	0x0A, 0x0A, 0 ,0x0A, 0x0A, 2 , 0x02,//
+	// 0x0A, 0x0A, 0 ,0x0A, 0x0A, 2 , 0x02,// original
 	// 81 Phase 3
 	0, 0, 0, 0, 0, 0, 0,//
 	// 88 Phase 4
@@ -422,9 +429,11 @@ const unsigned char GxEPD2_290_C90c::lut_partial[] PROGMEM = {
 	// 137 Phase 11
 	0, 0, 0, 0, 0, 0, 0,//
 	// 144 FR[0 - 11]
-	0x22, 0x22, 0x22, 0x22, 0x22, 0x22
+  //  FR[n] indicates the frame rate of the group n.
+	// 0b00100010, 0b00100010, 0b00100010, 0b00100010, 0b00100010, 0b00100010,
+  	0b00010011, 0b00010011, 0b00010011, 0b00010011, 0b00010011, 0b00010011,
 	// 150
-	, 0, 0, 0
+	0, 0, 0
 };
 
 
