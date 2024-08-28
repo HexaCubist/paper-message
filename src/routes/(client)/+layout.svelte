@@ -7,9 +7,9 @@
 
 <div class="pageLayout">
 
-	<div class="navbar bg-base-100 text-base-content border border-black rounded-box">
+	<div class="navbar bg-base-100 flex-wrap text-base-content border border-black rounded-box">
 		<div class="flex-1">
-			<a href="/" class="btn btn-ghost text-lg hidden sm:flex">Royal Society of Besties</a>
+			<a href="/" class="btn btn-ghost text-lg hidden sm:flex max-w-full h-auto text-left">Royal Society of Besties</a>
 			<a href="/" class="btn btn-ghost text-lg flex sm:hidden">RSB</a>
 		</div>
 		<div class="flex-none">
