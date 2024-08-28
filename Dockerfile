@@ -14,7 +14,11 @@ USER pptruser
 
 WORKDIR /app
 COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml", "yarn.lock", "./"]
-COPY --chown=pptruser:pptruser --chmod=0777 ".yarn/patches" ".yarn/patches"
+COPY --chown=pptruser:pptruser ".yarn/patches" ".yarn/patches"
+USER root
+RUN chown -R pptruser:pptruser ./
+RUN chmod -R 777 ./
+USER pptruser
 RUN cp -r /home/pptruser/node_modules ./node_modules
 
 
