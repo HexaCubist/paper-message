@@ -7,4 +7,7 @@ export default defineConfig({
   define: {
     APP_VERSION: JSON.stringify(packageJson.version),
   },
+  optimizeDeps: {
+    include: ["@xterm/xterm"],
+  },
 });

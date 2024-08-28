@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index dfc9b82da4a8acbd92ffc0f5df2829556f692004..1566a3b40028d72c320cbc120b60bfae219a559d 100644
+--- a/package.json
++++ b/package.json
+@@ -4,6 +4,7 @@
+   "module": "lib/index.js",
+   "main": "lib/index.js",
+   "types": "lib/index.d.ts",
++  "type":"module",
+   "license": "Apache-2.0",
+   "files": [
+     "lib",
