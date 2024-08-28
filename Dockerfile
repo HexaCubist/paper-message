@@ -13,7 +13,8 @@ RUN mkdir -p /home/pptruser/Downloads /app \
 USER pptruser
 
 WORKDIR /app
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml", "yarn.lock", ".yarn", "./"]
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", ".yarnrc.yml", "yarn.lock", "./"]
+COPY --chown=pptruser:pptruser ".yarn/patches" ".yarn/patches"
 RUN cp -r /home/pptruser/node_modules ./node_modules
 
 
