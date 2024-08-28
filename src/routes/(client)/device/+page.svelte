@@ -150,7 +150,7 @@
   }
 </script>
 
-<FrontFace page={0} live={true} userData={data.user} />
+<FrontFace page={0} live={true} userData={data.user} tokenID={data.tokenID} />
 
 <div class="flex flex-col items-center gap-4">
   <div class="font-sans prose w-full max-w-screen-md">

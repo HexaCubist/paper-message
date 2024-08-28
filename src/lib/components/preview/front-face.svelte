@@ -9,6 +9,7 @@
     live = $bindable(true),
     previewData = $bindable(false),
     userData,
+    tokenID,
   }: {
     page: number;
     live: boolean;
@@ -19,6 +20,7 @@
         }
       | false;
     userData: userDataType;
+    tokenID: string;
   } = $props();
 
   const patternSize = 50;
@@ -111,7 +113,7 @@
                 <iframe
                   transition:fade
                   class="col-start-1 row-start-1"
-                  src="/api/0/pages/1?live&preview={encodeURIComponent(
+                  src="/api/{tokenID}/pages/1?live&preview={encodeURIComponent(
                     JSON.stringify(previewData)
                   )}"
                   style:transform="scale({ratio})"
@@ -120,14 +122,14 @@
               {/key}
             {:else if live}
               <iframe
-                src="/api/0/pages/{page}?live"
+                src="/api/{tokenID}/pages/{page}?live"
                 style:transform="scale({ratio})"
                 title="Live"
               ></iframe>
             {:else}
               <img
-                src="/api/0/pages/{page}"
-                class="image-preview"
+                src="/api/{tokenID}/pages/{page}"
+                class="image-preview w-[100cqh] h-[100cqw]"
                 height="263.05664"
                 alt="Page {page}"
                 onload={() => {
@@ -176,7 +178,8 @@
     }
   }
   .inner-frame {
-    @apply grid h-full grid-cols-1 grid-rows-1 items-center w-full bg-white bg-repeat contain-inline-size transition justify-center justify-items-center;
+    @apply grid h-full grid-cols-1 grid-rows-1 items-center w-full bg-white bg-repeat contain-inline-size transition justify-center justify-items-center relative;
+    container-type: size;
     background-image: url("img/cardboard-flat.png");
     background-size: 100px;
     box-shadow:
