@@ -3317,7 +3317,7 @@ __metadata:
     esptool-js: "patch:esptool-js@npm%3A0.4.5#~/.yarn/patches/esptool-js-npm-0.4.5-481c3be687.patch"
     jimp: "npm:^0.22.12"
     moment: "npm:^2.30.1"
-    moment-timezone/builds/moment-timezone-with-data-10-year-range.js: "npm:^0.5.45"
+    moment-timezone: "npm:^0.5.45"
     number-to-words: "npm:^1.2.4"
     path-normalize: "npm:^6.0.13"
     pg: "npm:^8.12.0"
@@ -4002,9 +4002,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone/builds/moment-timezone-with-data-10-year-range.js@npm:^0.5.45":
+"moment-timezone@npm:^0.5.45":
   version: 0.5.45
-  resolution: "moment-timezone/builds/moment-timezone-with-data-10-year-range.js@npm:0.5.45"
+  resolution: "moment-timezone@npm:0.5.45"
   dependencies:
     moment: "npm:^2.29.4"
   checksum: 10c0/7497f23c4b8c875dbf07c03f9a1253f79edaeedc29d5732e36bfd3c5577e25aed1924fbd84cbb713ce1920dbe822be0e21bd487851a7d13907226f289a5e568b

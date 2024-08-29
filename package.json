@@ -49,7 +49,7 @@
     "drizzle-orm": "^0.33.0",
     "jimp": "^0.22.12",
     "moment": "^2.30.1",
-    "moment-timezone/builds/moment-timezone-with-data-10-year-range.js": "^0.5.45",
+    "moment-timezone": "^0.5.45",
     "number-to-words": "^1.2.4",
     "path-normalize": "^6.0.13",
     "pg": "^8.12.0",
