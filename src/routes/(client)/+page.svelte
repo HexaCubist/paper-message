@@ -9,7 +9,7 @@
     getNextPostTime,
     type messageDataType,
   } from "../../constants";
-  import moment from "moment";
+  import moment from "moment-timezone/builds/moment-timezone-with-data-10-year-range.js";
   import { env } from "$env/dynamic/public";
   import { Role } from "../../constants.js";
   import { fade } from "svelte/transition";
@@ -172,7 +172,7 @@
       {#if sending}
         Sending...
       {:else if data.lastMessage && APP_MODE === AppModes.LimitArrives}
-        Edit (arrives {moment(getNextPostTime()).format("h:mma")} - {moment(
+        Edit (arrives {getNextPostTime().format("h:mma")} - {moment(
           getNextPostTime()
         ).fromNow()})
       {:else if canSend}
@@ -180,7 +180,7 @@
         {#if APP_MODE === AppModes.LimitSends}
           (once {moment.duration(env.PUBLIC_TIME_INTERVAL).humanize()})
         {:else}
-          now (arrives {moment(getNextPostTime()).format("h:mma")})
+          now (arrives {getNextPostTime().format("h:mma")})
         {/if}
       {:else}
         You can send {timeTillLabel}

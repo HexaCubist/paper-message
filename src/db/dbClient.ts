@@ -12,7 +12,7 @@ import {
   getNextPostTime,
   type userDataType,
 } from "../constants";
-import moment from "moment";
+import moment from "moment-timezone/builds/moment-timezone-with-data-10-year-range.js";
 
 const pool = postgres(process.env.AUTH_DRIZZLE_URL!, { max: 1 });
 

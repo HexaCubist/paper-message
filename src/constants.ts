@@ -1,5 +1,5 @@
 import { env } from "$env/dynamic/public";
-import moment from "moment";
+import moment from "moment-timezone/builds/moment-timezone-with-data-10-year-range.js";
 import type { getMessages, getUser } from "./db/dbClient";
 
 export const resolution = {
@@ -29,7 +29,8 @@ export const APP_MODE = env.PUBLIC_DELIVER_TIME
 
 export const getNextPostTime = () => {
   if (APP_MODE === AppModes.LimitSends) return moment();
-  const time = moment(env.PUBLIC_DELIVER_TIME, "h:mm A");
+  let time = moment.tz(env.PUBLIC_DELIVER_TIME, "h:mm A", SERVER_TIMEZONE);
+  time = time.tz(moment.tz.guess());
   if (moment().isBefore(time)) return time;
   return time.add(1, "days");
 };
