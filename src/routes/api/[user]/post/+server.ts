@@ -1,11 +1,18 @@
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { createMessage, editMessage, getUser } from "../../../../db/dbClient";
-import { APP_MODE, AppModes, Role } from "../../../../constants";
+import {
+  APP_MODE,
+  AppModes,
+  getNextPostTime,
+  Role,
+} from "../../../../constants";
 
 export const POST: RequestHandler = async ({ request, params, locals }) => {
-  const hasAlreadyPosted =
-    locals.nextTime > Date.now() && locals.role !== Role.Admin;
+  const existingMessage = locals.thisTermMessages.find(
+    (m) => m.authorId === locals.userID
+  );
+  const hasAlreadyPosted = existingMessage && locals.role !== Role.Admin;
   if (hasAlreadyPosted && APP_MODE === AppModes.LimitSends) {
     return json({ error: "Rate limited" }, { status: 429 });
   }
@@ -17,12 +24,11 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
   }
   if (hasAlreadyPosted) {
     // Find existing message
-    const lastMessage = locals.messages.find((m) => m.authorId === user);
-    if (!lastMessage)
+    if (!existingMessage)
       return json({ error: "No message found" }, { status: 404 });
     await editMessage(
       user,
-      lastMessage?.id,
+      existingMessage.id,
       message,
       locals.role === Role.Admin && override
     );
