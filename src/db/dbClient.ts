@@ -97,7 +97,7 @@ export const editMessage = async (
       createdAt: override ? moment().subtract(1, "day").toDate() : undefined,
     })
     .where(eq(schema.messages.id, messageID));
-  console.log("Message created");
+  console.log("Message edited");
 };
 
 export const clearMessages = async (userID?: string) => {
