@@ -48,7 +48,13 @@ bool downloadAllImages(UserInfo *userInfo, uint8_t page_num, uint8_t page_count)
 
     Serial.println("Loading bar trick ready!");
 
+    WiFiClientSecure wifi_client;
 
+    if (!configureClient(wifi_client)) {
+        Serial.println("Failed to configure client");
+        displayError("SSL CONNECTION FAILED");
+        return false;
+    }
 
 
     int pixels_covered = 0;
@@ -70,17 +76,34 @@ bool downloadAllImages(UserInfo *userInfo, uint8_t page_num, uint8_t page_count)
             display->displayWindow(0,0, SIDEBAR_WIDTH, display_height);
         }
 
+        if (!wifi_client.connected()) {
+            Serial.println("Connection lost, reconnecting..");
 
-        bool res = loadBitmap(many_image_buffer[i], i, getApiToken(), true);
+            if (!configureClient(wifi_client)) {
+                Serial.println("Failed to configure client");
+                displayError("SSL CONNECTION LOST");
+                return false;
+            }
+
+        } else {
+            Serial.println("Reusing SSL connection..");
+
+        }
+
+
+        bool res = loadBitmap(wifi_client, many_image_buffer[i], i, getApiToken(), true);
         if (!res) {
             Serial.println("Failed to download image");
-            displayError("Failed to download an message");
+            displayError("MESSAGE DOWNLOAD FAILED");
+            delay(1000);
         }
 
 
         pixels_covered = progress_bar_length;
     }
     renderBuffer(IMAGE_DOWNLOAD, UpdateMode::LiveUpdate);
+
+    wifi_client.stop();
 
 
     return openImage(userInfo, page_num);

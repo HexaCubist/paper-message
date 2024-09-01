@@ -71,71 +71,46 @@ uint32_t read8n(WiFiClient& client, uint8_t* buffer, int32_t bytes)
 
 
 // const char* host, const char* path, const char* filename, const char* fingerprint, int16_t x, int16_t y,
-bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t page_num, char* api_token, bool with_color) {
+bool loadBitmap(WiFiClientSecure &client, uint8_t mono_buffer[display_m_height*display_m_width], uint8_t page_num, char* api_token, bool with_color) {
+	// Not validating server
+	uint32_t startTime = millis();
 
-		// Not validating server
+	// path + user_token + pagesEndpoint
+	char full_path [64];
+	strcpy(full_path,path);
+	strcat(full_path,api_token);
+	strcat(full_path,pagesEndpoint);
 
-  // path + user_token + pagesEndpoint
-  char full_path [64];
-  strcpy(full_path,path);
-  strcat(full_path,api_token);
-  strcat(full_path,pagesEndpoint);
-
-  char strPageNum [10];
-  itoa(page_num,strPageNum,10);
-
-	WiFiClientSecure client;
-
-  // // Screen buffer
-  // memset(output_row_mono_buffer, 0, sizeof(uint8_t) * display_height * display_width);
-  // memset(output_row_color_buffer, 0, sizeof(uint8_t) * display_height * display_width);
-
-
-		
 	bool connection_ok = false;
 	bool valid = false; // valid format to be handled
-	bool flip = true; // bitmap is stored bottom-to-top
-	uint32_t startTime = millis();
+	bool flip = true; // bitmap is stored bottom-to-topO
+
+
+	char strPageNum [10];
+	itoa(page_num,strPageNum,10);
 	Serial.println(); Serial.print("downloading file \""); Serial.print(strPageNum);  Serial.println("\"");
-	Serial.print("connecting to "); Serial.println(rsb_host);
-
-	
-		Serial.println("connecting to server");
-	client.setInsecure();
-	Serial.println("connecting to server");
-	Serial.println(ESP.getFreeHeap());
-	if (!client.connect(rsb_host, httpsPort)) {
-		Serial.println("connection failed");
-		return false;
-	}
-	Serial.println("connected!");
-
 
 	
 	Serial.print("requesting URL: ");
 	Serial.println(String("https://") + rsb_host + full_path + strPageNum);
-  Serial.println(String("GET ") + full_path + strPageNum + " HTTP/1.1\r\n" +
+	Serial.println(String("GET ") + full_path + strPageNum + " HTTP/1.1\r\n" +
 				"Host: " + rsb_host + "\r\n" +
 				"User-Agent: ESP32_Zac_EPaper\r\n" +
-				"Connection: close\r\n\r\n");
+				"Connection: keep-alive\r\n\r\n");
 	client.print(String("GET ") + full_path + strPageNum + " HTTP/1.1\r\n" +
 				"Host: " + rsb_host + "\r\n" +
 				"User-Agent: ESP32_Zac_EPaper\r\n" +
-				"Connection: close\r\n\r\n");
+				"Connection: keep-alive\r\n\r\n");
 	Serial.println("request sent");
-	while (client.connected())
-	{
+	while (client.connected()) {
 		String line = client.readStringUntil('\n');
-		if (!connection_ok)
-		{
-		connection_ok = line.startsWith("HTTP/1.1 200 OK");
-		if (connection_ok) Serial.println(line);
-		//if (!connection_ok) Serial.println(line);
+		if (!connection_ok) {
+			connection_ok = line.startsWith("HTTP/1.1 200 OK");
+			if (connection_ok) Serial.println(line);
 		}
-		if (!connection_ok) Serial.println(line);
-		//Serial.println(line);
-		if (line == "\r")
-		{
+		Serial.println(line);
+
+		if (line == "\r") {
 		Serial.println("headers received");
 		break;
 		}
@@ -337,11 +312,11 @@ bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t p
 				}
 			} // end pixel
 			int16_t yrow = (flip ? h - row - 1 : row);
-			// display.writeImage(output_row_mono_buffer, output_row_color_buffer, x, yrow, w, 1);
-    //   memcpy(grid_mono_buffer[yrow], output_row_mono_buffer, sizeof(output_row_mono_buffer));
-    //   memcpy(grid_color_buffer[yrow], output_row_color_buffer, sizeof(output_row_mono_buffer));
-		int current_index = yrow * display_m_width;
-		memcpy(mono_buffer + current_index, output_row_mono_buffer, display_m_width);
+
+
+			// Save the row to the screen buffer
+			int current_index = yrow * display_m_width;
+			memcpy(mono_buffer + current_index, output_row_mono_buffer, display_m_width);
 
       } // end line
 			Serial.print("downloaded in "); Serial.print(millis() - startTime); Serial.println(" ms");
@@ -353,7 +328,23 @@ bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t p
 		Serial.println("bitmap format not handled.");
 	}
 
-    client.stop();
 
   return true;
+}
+
+bool configureClient(WiFiClientSecure &client) {
+	Serial.print("connecting to "); Serial.println(rsb_host);
+
+	
+	Serial.println("connecting to server");
+	client.setInsecure();
+	
+	Serial.println("connecting to server");
+	Serial.println(ESP.getFreeHeap());
+	if (!client.connect(rsb_host, httpsPort)) {
+		Serial.println("connection failed");
+		return false;
+	}
+	Serial.println("connected!");
+	return true;
 }

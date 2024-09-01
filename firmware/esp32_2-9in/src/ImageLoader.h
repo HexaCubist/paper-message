@@ -4,6 +4,7 @@
 #include <FetchBMP.h>
 #include <Config.h>
 #include <WifiController.h>
+#include <WiFiClientSecure.h>
 #include <UserInfo.h>
 #include <images/download.h>
 
