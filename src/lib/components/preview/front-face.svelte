@@ -7,12 +7,14 @@
   let {
     page = $bindable(0),
     live = $bindable(true),
+    interactive = true,
     previewData = $bindable(false),
     userData,
     tokenID,
   }: {
     page: number;
     live: boolean;
+    interactive: boolean;
     previewData?:
       | {
           author: string;
@@ -49,6 +51,7 @@
   <button
     title={previewing ? "Preview is active" : "Click to change page"}
     class="outer-interact"
+    class:pointer-events-none={!interactive}
     class:previewing
     class:changing
     onclick={() => {

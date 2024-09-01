@@ -12,6 +12,7 @@
   import { tick } from "svelte";
   import { base } from "$app/paths";
   import bootImg from "./arduino-bootLabel.jpeg";
+  import { Role } from "../../../constants";
 
   const { Terminal } = xterm;
 
@@ -150,7 +151,13 @@
   }
 </script>
 
-<FrontFace page={0} live={true} userData={data.user} tokenID={data.tokenID} />
+<FrontFace
+  page={0}
+  live={true}
+  interactive={data.role === Role.Admin}
+  userData={data.user}
+  tokenID={data.tokenID}
+/>
 
 <div class="flex flex-col items-center gap-4">
   <div class="font-sans prose w-full max-w-screen-md">
