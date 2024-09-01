@@ -4,7 +4,7 @@
 #include <WiFiClient.h>
 #include <WiFiClientSecure.h>
 #include <Config.h>
-
+#include <HttpClientSingleton.h>
 
 struct UserInfo {
     char version[8];

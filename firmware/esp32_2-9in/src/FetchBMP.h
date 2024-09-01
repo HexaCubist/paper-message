@@ -5,7 +5,8 @@
 #include <WiFiClientSecure.h>
 #include <Config.h>
 #include <ScreenBuffer.h>
-#include <HTTPClient.h>
+#include <HttpClientSingleton.h>
+
 
 uint16_t read16(WiFiClient* client);
 uint32_t read32(WiFiClient* client);

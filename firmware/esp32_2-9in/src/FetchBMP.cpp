@@ -10,7 +10,6 @@ uint8_t mono_palette_buffer[max_palette_pixels / 8]; // palette buffer for depth
 uint8_t color_palette_buffer[max_palette_pixels / 8]; // palette buffer for depth <= 8 c/w
 uint16_t rgb_palette_buffer[max_palette_pixels]; // palette buffer for depth <= 8 for buffered graphics, needed for 7-color display
 
-HTTPClient http;
 
 
 uint16_t read16(WiFiClient* client)
@@ -54,7 +53,7 @@ uint32_t skip(WiFiClient* client, int32_t bytes)
 uint32_t read8n(WiFiClient* client, uint8_t* buffer, int32_t bytes) {
 	int32_t remain = bytes;
 	uint32_t start = millis();
-	while ((http.connected() || client->available()) && (remain > 0))
+	while ((client->connected() || client->available()) && (remain > 0))
 	{
 		if (client->available())
 		{
@@ -89,8 +88,12 @@ bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t p
 		return false;
 	}
 
+	HTTPClient& http = HttpClientSingleton::getInstance();
+
+
 	http.setUserAgent("ESP32_Zac_EPaper");
 	http.setReuse(true);
+	
 	http.begin(full_path);
 
 	int httpCode = http.GET();
@@ -104,7 +107,7 @@ bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t p
 	int len = http.getSize();
 
 
-	bool connection_ok = false;
+	bool connection_ok = true;
 	bool valid = false; // valid format to be handled
 	bool flip = true; // bitmap is stored bottom-to-topO
 
@@ -217,7 +220,15 @@ bool loadBitmap(uint8_t mono_buffer[display_m_height*display_m_width], uint8_t p
 	
 	// Scan through image data rows
 	for (uint16_t row = 0; row < h; row++, rowPosition += rowSize) {
-		if (!connection_ok || !(http.connected() || stream->available())) break;
+		if (!connection_ok || !(http.connected() || stream->available())) {
+			Serial.println("Connection lost!");
+			Serial.print("Row: "); Serial.println(row);
+			Serial.print("Connection: "); Serial.println(connection_ok);
+			Serial.print("HTTP: "); Serial.println(http.connected());
+			Serial.print("Stream: "); Serial.println(stream->available());
+			
+			break;
+		}
 
 		delay(1); // yield() to avoid WDT
 		uint32_t in_remain = rowSize;
