@@ -9,6 +9,7 @@ const offsetCenter = (radius: number, y: number) => {
 };
 
 const sizePixelMap = {
+  px: [[0, 0]],
   sm: [...offsetCenter(1, -1), ...offsetCenter(1, 0), ...offsetCenter(1, 1)],
   md: [
     ...offsetCenter(1, -3),

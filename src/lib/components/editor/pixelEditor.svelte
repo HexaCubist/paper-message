@@ -9,13 +9,12 @@
   let editorEl: HTMLCanvasElement | null = $state(null);
   let editor: PixelEditor | null = $state(null);
 
-  let toolType: keyof typeof tools = $state("brush");
-  let brushSize: "sm" | "md" | "lg" = $state("md");
+  let toolType: keyof typeof tools = $state("pencil");
+  let brushSize: "px" | "sm" | "md" | "lg" = $state("md");
 
   const tools = $derived({
-    pencil: new Pencil("black"),
-    brush: new Brush("black", brushSize),
-    eraser: new Pencil(),
+    pencil: new Brush("black", brushSize),
+    eraser: new Brush(undefined, brushSize),
   });
 
   onMount(() => {
@@ -90,24 +89,26 @@
     }}>Pencil</button
   >
   <div class="btn-group">
+    <p type="button" class="btn-label p-2">Brush</p>
     <button
       type="button"
-      class="btn-label"
       onclick={() => {
         if (editor) {
-          toolType = "brush";
+          brushSize = "px";
         }
-      }}>Brush</button
-    >
+      }}
+      class:active={brushSize === "px"}
+      class="brush brush-px"
+      title="one pixel"
+    ></button>
     <button
       type="button"
       onclick={() => {
         if (editor) {
-          toolType = "brush";
           brushSize = "sm";
         }
       }}
-      class:active={brushSize === "sm" && toolType === "brush"}
+      class:active={brushSize === "sm"}
       class="brush brush-sm"
       title="small"
     ></button>
@@ -115,11 +116,10 @@
       type="button"
       onclick={() => {
         if (editor) {
-          toolType = "brush";
           brushSize = "md";
         }
       }}
-      class:active={brushSize === "md" && toolType === "brush"}
+      class:active={brushSize === "md"}
       class="brush brush-md"
       title="medium"
     ></button>
@@ -127,11 +127,10 @@
       type="button"
       onclick={() => {
         if (editor) {
-          toolType = "brush";
           brushSize = "lg";
         }
       }}
-      class:active={brushSize === "lg" && toolType === "brush"}
+      class:active={brushSize === "lg"}
       class="brush brush-lg"
       title="large"
     ></button>
@@ -183,6 +182,9 @@
       &::after {
         @apply block w-4 h-4 bg-white rounded-full mx-auto;
         content: "";
+      }
+      &.brush-px:after {
+        @apply w-1 h-1 rounded-none;
       }
       &.brush-sm:after {
         @apply w-2 h-2;
