@@ -1,4 +1,5 @@
 import { env } from "$env/dynamic/public";
+import { github_release_url } from "../../constants";
 import type { LayoutServerLoad } from "./$types";
 import QRCode from "qrcode";
 
@@ -37,5 +38,15 @@ export const load: LayoutServerLoad = async ({
         light: "#ffffff",
       },
     }),
+    update_details: await QRCode.toDataURL(`${env.PUBLIC_HOST}/r/u`, {
+      errorCorrectionLevel: "L",
+      margin: 0,
+      scale: 1,
+      color: {
+        dark: "#000000",
+        light: "#ffffff",
+      },
+    }),
+
   };
 };

@@ -2,6 +2,9 @@ import { env } from "$env/dynamic/public";
 import moment from "moment-timezone/builds/moment-timezone-with-data-10-year-range.js";
 import type { getMessages, getUser } from "./db/dbClient";
 
+export const github_url = "https://github.com/HexaCubist/paper-message";
+export const github_release_url = `${github_url}/releases/latest`;
+
 export const resolution = {
   w: 296,
   h: 128,
