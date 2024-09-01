@@ -162,7 +162,7 @@
 
 <style lang="postcss">
   .toolbar {
-    @apply flex items-center gap-2 bg-primary;
+    @apply flex flex-wrap items-center gap-2 bg-primary;
     button {
       @apply p-2 bg-black bg-opacity-30 text-white hover:scale-95 hover:bg-opacity-50 transition;
       &.active {
