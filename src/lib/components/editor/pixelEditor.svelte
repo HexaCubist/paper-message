@@ -63,7 +63,7 @@
   };
 </script>
 
-<div class="editor-frame relative">
+<div class="editor-frame relative bg-white">
   <canvas class="z-0 relative" bind:this={editorEl} onpointerup={save}></canvas>
   <div class="embed-frame">
     <PreviewEmbed
