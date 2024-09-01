@@ -50,15 +50,17 @@ bool downloadAllImages(UserInfo *userInfo, uint8_t page_num, uint8_t page_count)
 
     WiFiClientSecure wifi_client;
 
-    if (!configureClient(wifi_client)) {
-        Serial.println("Failed to configure client");
-        displayError("SSL CONNECTION FAILED");
-        return false;
-    }
+    // if (!configureClient(wifi_client)) {
+    //     Serial.println("Failed to configure client");
+    //     displayError("SSL CONNECTION FAILED");
+    //     return false;
+    // }
 
 
     int pixels_covered = 0;
     for (int i = 0; i < page_count && i < MAX_PAGES; i++) {
+            Serial.printf("Heap available memory:     %8d bytes\n", ESP.getFreeHeap());
+
         int progress_bar_length = ((i+1) * (display_width)) / (page_count+1);
         int new_region = progress_bar_length - pixels_covered;
         Serial.printf("Progress bar length: %d\n", progress_bar_length);
@@ -79,11 +81,11 @@ bool downloadAllImages(UserInfo *userInfo, uint8_t page_num, uint8_t page_count)
         if (!wifi_client.connected()) {
             Serial.println("Connection lost, reconnecting..");
 
-            if (!configureClient(wifi_client)) {
-                Serial.println("Failed to configure client");
-                displayError("SSL CONNECTION LOST");
-                return false;
-            }
+            // if (!configureClient(wifi_client)) {
+            //     Serial.println("Failed to configure client");
+            //     displayError("SSL CONNECTION LOST");
+            //     return false;
+            // }
 
         } else {
             Serial.println("Reusing SSL connection..");
@@ -91,7 +93,7 @@ bool downloadAllImages(UserInfo *userInfo, uint8_t page_num, uint8_t page_count)
         }
 
 
-        bool res = loadBitmap(wifi_client, many_image_buffer[i], i, getApiToken(), true);
+        bool res = loadBitmap(many_image_buffer[i], i, getApiToken(), true);
         if (!res) {
             Serial.println("Failed to download image");
             displayError("MESSAGE DOWNLOAD FAILED");
