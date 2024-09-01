@@ -38,8 +38,8 @@
   class="textarea textarea-bordered w-full h-24 transition"
   placeholder="Your message here..."
   bind:value={liveText}
+  name="message"
   onkeyup={(e) => updateText(e)}
   disabled={sending || disabled}
   maxlength="340"
-  required
 ></textarea>
