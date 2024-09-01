@@ -195,11 +195,27 @@
     <p class="mt-10">
       <span class="capitalize">
         {numConvert.toWords(data.userList.length)}
-      </span> folk have logged in and gained access:
+      </span>
+      folk have logged in and gained access, and {numConvert.toWords(
+        data.userList.filter((u) => u[1]).length
+      )} have sent a message today:
     </p>
-    <ul class="list-disc list-inside mt-2 text-[12px]">
+    <ul class="list-inside mt-2 text-[12px]">
       {#each data.userList as user}
-        <li>{user}</li>
+        <li class="flex items-center mt-3 gap-2">
+          <span
+            class="checkbox checkbox-sm"
+            aria-hidden="true"
+            aria-checked={user[1]}
+          ></span>
+          <span title="{user[0]} - {user[1] ? 'has posted' : 'has not posted'}">
+            {user[0]}
+            <span class="font-sans">
+              {#if user[1]}
+                🎉{/if}
+            </span>
+          </span>
+        </li>
       {/each}
     </ul>
   </form>

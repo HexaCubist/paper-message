@@ -16,7 +16,7 @@ export const load: LayoutServerLoad = async ({ fetch, locals }) => {
     account: session.user,
     role: locals.role,
     // Get full list of users
-    userList: await userEmailList("name"),
+    userList: (await userEmailList(["name", "hasSent"])) as [string, boolean][],
     appMode: locals.appMode,
     nextTime: locals.nextTime,
     tokenID: locals.tokenID,

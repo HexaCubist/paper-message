@@ -165,12 +165,40 @@ export const ensureTokens = async () => {
 };
 
 // Users list
-export const userEmailList = async (
-  resultType: keyof userDataType = "name"
-) => {
-  const allUsers = await db.query.users.findMany();
-  return allUsers.map((u) => u[resultType]);
-};
+export async function userEmailList(
+  resultType:
+    | (keyof userDataType | "hasSent")[]
+    | (keyof userDataType | "hasSent") = "name"
+) {
+  const allUsers = (
+    await db.query.users.findMany({
+      with: {
+        messages: {
+          columns: {
+            id: true,
+          },
+          where: and(
+            gt(
+              schema.messages.createdAt,
+              getLastPostTime().subtract(1, "day").toDate()
+            ),
+            lte(
+              schema.messages.createdAt,
+              APP_MODE === AppModes.LimitArrives
+                ? getLastPostTime().toDate()
+                : new Date()
+            )
+          ),
+        },
+      },
+    })
+  ).map(({ messages, ...u }) => ({ ...u, hasSent: messages.length > 0 }));
+  if (Array.isArray(resultType)) {
+    return allUsers.map((u) => resultType.map((r) => u[r]));
+  } else {
+    return allUsers.map((u) => u[resultType]);
+  }
+}
 
 // Admin: Change User Name
 export const changeUserName = async (userID: string, newName: string) => {
