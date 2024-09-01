@@ -13,6 +13,8 @@
   import { env } from "$env/dynamic/public";
   import { Role } from "../../constants.js";
   import { fade } from "svelte/transition";
+  import ContentEditor from "$lib/components/editor/contentEditor.svelte";
+  import type { editorData } from "$lib/components/editor/props";
 
   const { data } = $props();
 
@@ -21,12 +23,13 @@
     message: "",
   });
 
-  const updateText = debounce((e) => {
-    previewData.message = (e.target as HTMLInputElement)?.value;
-  }, 500);
-
-  let liveText = $state(data.lastMessage?.message || "");
-  let charsLeft = $derived(140 - liveText.length);
+  let editorData: editorData = $state({
+    type: data.lastMessage?.message ? "text" : ("image" as any),
+    content: {
+      text: data.lastMessage?.message ?? "",
+      image: data.lastMessage?.image ?? undefined,
+    },
+  });
   let sending = $state(false);
 
   let timeTill = $state(data.nextTime - Date.now());
@@ -46,14 +49,7 @@
 
 <!-- Preview box -->
 <div class="p-4 pt-0 relative">
-  <div class="hidden sm:contents">
-    {#if showPreview}
-      <FrontFace page={0} live={true} bind:previewData userData={data.user} />
-    {/if}
-  </div>
-  {#if !showPreview}
-    <img src="/logo-colour-min.png" alt="" class="w-64 max-w-full mx-auto" />
-  {/if}
+  <img src="/logo-colour-min.png" alt="" class="w-64 max-w-full mx-auto" />
   {#if !canSend && showComplete}
     <button
       class="preview-complete"
@@ -76,28 +72,6 @@
   {/if}
 </div>
 <div class="form-control block max-w-screen-md mx-auto">
-  <div class="label">
-    <span class="label-text">
-      {#if charsLeft > 0}
-        Your message ({charsLeft} left)
-      {:else if charsLeft === 0}
-        Your message (the perfect length)
-      {:else if charsLeft > -50}
-        Your very long message ({-charsLeft} over)
-      {:else if charsLeft > -100}
-        Your super long message ({-charsLeft} over)
-      {:else if charsLeft > -140}
-        Please consider writing a shorter message, this is getting ridiculous ({-charsLeft}
-        over)
-      {:else if charsLeft > -200}
-        Your message is now twice the length of a tweet ({-charsLeft} over) and possibly
-        shouldn't be, but who am I to say?
-      {:else}
-        I'm cutting you off here as you've probably already broken the screen's
-        layout ({-charsLeft})
-      {/if}
-    </span>
-  </div>
   <form
     onsubmit={async (e) => {
       e.preventDefault();
@@ -114,7 +88,7 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: liveText,
+          message: editorData,
           ...(adminOverride ? { override: true } : {}),
         }),
       }).catch((e) => {
@@ -127,20 +101,20 @@
       return false;
     }}
   >
-    <textarea
-      class="textarea textarea-bordered w-full h-24 transition"
-      placeholder="Your message here..."
-      bind:value={liveText}
-      onkeyup={(e) => updateText(e)}
-      disabled={sending ||
-        !(
-          canSend ||
-          data.role === Role.Admin ||
-          APP_MODE === AppModes.LimitArrives
-        )}
-      maxlength="340"
-      required
-    ></textarea>
+    <ContentEditor
+      bind:editorData
+      {sending}
+      {canSend}
+      account={data.account}
+      update={(data) => {
+        editorData = data;
+      }}
+      disabled={!(
+        canSend ||
+        data.role === Role.Admin ||
+        APP_MODE === AppModes.LimitArrives
+      )}
+    />
     {#if data.role === Role.Admin}
       <label class="label cursor-pointer gap-2">
         <input

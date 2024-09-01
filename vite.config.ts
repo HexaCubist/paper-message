@@ -13,4 +13,10 @@ export default defineConfig({
   optimizeDeps: {
     include: ["@xterm/xterm"],
   },
+  ssr: {
+    noExternal: ["@curtishughes/pixel-editor"],
+  },
+  build: {
+    target: "modules",
+  },
 });

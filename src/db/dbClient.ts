@@ -13,6 +13,7 @@ import {
   type userDataType,
 } from "../constants";
 import moment from "moment-timezone/builds/moment-timezone-with-data-10-year-range.js";
+import { bufferToImage } from "./imageSanitize";
 
 const pool = postgres(process.env.AUTH_DRIZZLE_URL!, { max: 1 });
 
@@ -67,16 +68,21 @@ export const getMessages = async (
       },
     },
   });
-  return messages;
+  return messages.map((m) => ({
+    ...m,
+    image: m.image ? bufferToImage(m.image) : undefined,
+  }));
 };
 
 export const createMessage = async (
   id: string,
-  message: string,
-  override: string
+  override?: string,
+  message?: string,
+  image?: Buffer
 ) => {
   await db.insert(schema.messages).values({
     message,
+    image,
     authorId: id,
     createdAt: override ? moment().subtract(1, "day").toDate() : undefined,
   });
@@ -86,13 +92,15 @@ export const createMessage = async (
 export const editMessage = async (
   authorId: string,
   messageID: number,
-  message: string,
-  override: string
+  override?: string,
+  message?: string,
+  image?: Buffer
 ) => {
   await db
     .update(schema.messages)
     .set({
       message,
+      image,
       authorId: authorId,
       createdAt: override ? moment().subtract(1, "day").toDate() : undefined,
     })

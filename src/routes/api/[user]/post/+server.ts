@@ -7,6 +7,7 @@ import {
   getNextPostTime,
   Role,
 } from "../../../../constants";
+import type { editorData } from "$lib/components/editor/props";
 
 export const POST: RequestHandler = async ({ request, params, locals }) => {
   const existingMessage = locals.thisTermMessages.find(
@@ -16,12 +17,17 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
   if (hasAlreadyPosted && APP_MODE === AppModes.LimitSends) {
     return json({ error: "Rate limited" }, { status: 429 });
   }
-  const { message, override } = await request.json();
+  const { message, override }: { message: editorData; override: string } =
+    await request.json();
   const user = params.user;
   const foundUser = await getUser(user);
   if (!foundUser) {
     return json({ error: "User not found" }, { status: 404 });
   }
+  const imageBuffer =
+    message.content.image && message.content.image.includes("base64,")
+      ? Buffer.from(message.content.image.split(",")[1], "base64")
+      : undefined;
   if (hasAlreadyPosted) {
     // Find existing message
     if (!existingMessage)
@@ -29,11 +35,17 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
     await editMessage(
       user,
       existingMessage.id,
-      message,
-      locals.role === Role.Admin && override
+      locals.role === Role.Admin ? override : undefined,
+      message.content.text ?? undefined,
+      imageBuffer ?? undefined
     );
   } else {
-    await createMessage(user, message, locals.role === Role.Admin && override);
+    await createMessage(
+      user,
+      locals.role === Role.Admin ? override : undefined,
+      message.content.text ?? undefined,
+      imageBuffer ?? undefined
+    );
   }
   return json(true);
 };

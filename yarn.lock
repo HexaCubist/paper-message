@@ -127,6 +127,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@curtishughes/pixel-editor@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@curtishughes/pixel-editor@npm:4.0.1"
+  checksum: 10c0/103f23494cd1da5027ed0cf0b6260bc2f9ee114ae589026de13e04afa09888f9b78ed9b58c4d06e86e097d7c11cf329ce2ff3a11078364a23fb098108bed4219
+  languageName: node
+  linkType: hard
+
 "@drizzle-team/brocli@npm:^0.8.2":
   version: 0.8.2
   resolution: "@drizzle-team/brocli@npm:0.8.2"
@@ -3297,6 +3304,7 @@ __metadata:
   dependencies:
     "@auth/drizzle-adapter": "npm:^1.4.2"
     "@auth/sveltekit": "npm:^1.4.2"
+    "@curtishughes/pixel-editor": "npm:^4.0.1"
     "@sveltejs/adapter-auto": "npm:^3.0.0"
     "@sveltejs/adapter-node": "npm:^5.2.2"
     "@sveltejs/kit": "npm:^2.0.0"

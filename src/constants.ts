@@ -3,8 +3,8 @@ import moment from "moment-timezone/builds/moment-timezone-with-data-10-year-ran
 import type { getMessages, getUser } from "./db/dbClient";
 
 export const resolution = {
-  w: 296,
-  h: 128,
+  w: 296 as const,
+  h: 128 as const,
 };
 
 export enum Role {

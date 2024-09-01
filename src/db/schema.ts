@@ -9,9 +9,17 @@ import {
   varchar,
   uniqueIndex,
   uuid,
+  customType,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "@auth/core/adapters";
 import { relations } from "drizzle-orm";
+
+// https://stackoverflow.com/a/76499742
+const bytea = customType<{ data: Buffer; notNull: false; default: false }>({
+  dataType() {
+    return "bytea";
+  },
+});
 
 export const users = pgTable(
   "user",
@@ -100,6 +108,7 @@ export const authenticators = pgTable(
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
   message: varchar("message", { length: 512 }),
+  image: bytea("image"),
   authorId: text("authorId").references(() => users.id, {
     onDelete: "cascade",
   }),

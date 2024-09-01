@@ -50,6 +50,13 @@
       "when": 1724627488303,
       "tag": "0006_ordinary_slapstick",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1725185036966,
+      "tag": "0007_familiar_sasquatch",
+      "breakpoints": true
     }
   ]
 }
