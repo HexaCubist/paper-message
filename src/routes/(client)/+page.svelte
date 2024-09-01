@@ -24,7 +24,7 @@
   });
 
   let editorData: editorData = $state({
-    type: data.lastMessage?.message ? "text" : ("image" as any),
+    type: data.lastMessage?.image ? "image" : ("text" as any),
     content: {
       text: data.lastMessage?.message ?? "",
       image: data.lastMessage?.image ?? undefined,
