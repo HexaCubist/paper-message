@@ -1,5 +1,5 @@
 import { Role } from "../../constants";
-import { getMessages, userEmailList } from "../../db/dbClient";
+import { getAllUsers, getMessages, userEmailList } from "../../db/dbClient";
 import type { userDataType } from "../api/[user]/+server";
 import type { LayoutServerLoad } from "./$types";
 
@@ -26,6 +26,7 @@ export const load: LayoutServerLoad = async ({ fetch, locals }) => {
     ...(locals.role === Role.Admin
       ? {
           messages: await getMessages(undefined, new Date(0), new Date()),
+          users: await getAllUsers(),
         }
       : {}),
   };

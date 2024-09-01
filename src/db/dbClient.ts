@@ -40,6 +40,28 @@ export const getUserFromToken = async (token: string) => {
   return foundUser;
 };
 
+export const getAllUsers = async () => {
+  const users = await db.query.users.findMany({
+    columns: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+    },
+    with: {
+      messages: {
+        columns: {
+          id: true,
+        },
+      },
+    },
+  });
+  return users.map((u) => ({
+    ...u,
+    messages: u.messages.length,
+  }));
+};
+
 export const getMessages = async (
   id?: string,
   startDate = getLastPostTime().subtract(1, "day").toDate(),
@@ -148,4 +170,14 @@ export const userEmailList = async (
 ) => {
   const allUsers = await db.query.users.findMany();
   return allUsers.map((u) => u[resultType]);
+};
+
+// Admin: Change User Name
+export const changeUserName = async (userID: string, newName: string) => {
+  await db
+    .update(schema.users)
+    .set({
+      name: newName,
+    })
+    .where(eq(schema.users.id, userID));
 };

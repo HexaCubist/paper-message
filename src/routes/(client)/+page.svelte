@@ -293,6 +293,52 @@
           >
             Clear ALL Messages
           </button>
+          <!-- User List -->
+          {#if data.users}
+            <div class="overflow-x-auto max-w-[80%]">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Messages</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {#each data.users as user}
+                    <tr>
+                      <td>{user.name}</td>
+                      <td>{user.messages}</td>
+                      <td>
+                        <button
+                          class="btn"
+                          onclick={async () => {
+                            const newName = prompt(
+                              `What would you like to change ${user.name}'s name to?`,
+                              user.name ?? ""
+                            );
+                            if (!newName) return;
+                            const res = await fetch(
+                              `/api/admin/user/${user.id}`,
+                              {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({ name: newName }),
+                              }
+                            );
+                            if (res.ok) window.location.reload();
+                          }}
+                        >
+                          Rename
+                        </button>
+                      </td>
+                    </tr>{/each}
+                </tbody>
+              </table>
+            </div>
+          {/if}
         </div>
       </div>
     </div>
