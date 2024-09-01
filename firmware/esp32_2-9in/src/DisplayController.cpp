@@ -57,7 +57,7 @@ void displayError(char* message) {
 	int16_t tbx, tby; uint16_t tbw, tbh;
 	display.getTextBounds(message, 0, 0, &tbx, &tby, &tbw, &tbh);
 	// center the bounding box by transposition of the origin:
-	uint16_t x = ((display.width() - tbw) / 2) - tbx;
+	uint16_t x = SIDEBAR_WIDTH + 2 - tbx;
 	uint16_t y = display.height() - tbh;
 	display.setCursor(x, y);
     display.print(message);

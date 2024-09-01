@@ -1,6 +1,7 @@
 #include "UserInfo.h"
 
 
+
 bool parseUserInfo(const char* json, UserInfo *ui) {
     StaticJsonDocument<250> doc;
     DeserializationError error = deserializeJson(doc, json);
@@ -23,44 +24,37 @@ bool parseUserInfo(const char* json, UserInfo *ui) {
 // Request json from endpoint:
 // https://rsb.nz/api/<token>
 bool getUserInfo(const char* api_token, UserInfo *ui) {
-    WiFiClientSecure client;
+	// path + user_token + pagesEndpoint
+	char full_path [128];
 
-    client.setInsecure();
+	if (!snprintf(full_path, 128, "https://%s/api/%s", rsb_host, api_token)) {
+		// Buffer too small
+		Serial.println("Buffer too small");
+		return false;
+	}
 
-    if (!client.connect(rsb_host, 443)) {
-        Serial.println("Connection failed");
+    HTTPClient& http = HttpClientSingleton::getInstance();
+
+
+	http.setUserAgent("ESP32_Zac_EPaper");
+	http.setReuse(true);
+	
+	if (!http.begin(full_path)) {
+        Serial.println("Failed to connect to server");
         return false;
     }
 
-    client.print(String("GET ") + path + api_token + " HTTP/1.1\r\n" +
-                 "Host: " + rsb_host + "\r\n" +
-                 "Connection: close\r\n\r\n");
-
-    unsigned long timeout = millis();
-    while (client.available() == 0) {
-        if (millis() - timeout > 5000) {
-            Serial.println(">>> Client Timeout !");
-            client.stop();
-            return false;
-        }
-    }
-
-    // Read all the lines of the reply from server, and ignore them
-    while(client.available()){
-        String line = client.readStringUntil('\r');
-
-        if (line == "\n") {
-            break;
-        }
+    int httpCode = http.GET();
+    if (httpCode != HTTP_CODE_OK) {
+        Serial.print("Failed to get user info, response code: ");
+        Serial.println(httpCode);
         
+        return false;
     }
 
-    // Parse JSON
-    String json = "";
-    while(client.available()){
-        json += (char)client.read();
-    }
-    client.stop();
+    String payload = http.getString();
 
-    return parseUserInfo(json.c_str(), ui);
+    http.end();
+
+    return parseUserInfo(payload.c_str(), ui);
 }
