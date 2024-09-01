@@ -100,6 +100,7 @@ void setup() {
     lastRenderedTimestamp = userInfo.last_message_at;
     max_page_num = userInfo.total_pages;
     downloadAllImages(&userInfo, 0, userInfo.total_pages);
+    Serial.printf("Heap available memory:     %8d bytes\n", ESP.getFreeHeap());
 
     // Reset before starting
     buttonWasPressed = false;
@@ -121,13 +122,16 @@ void loop() {
     }
 
     if (millis() - lastCheckedTimestamp > 30*1000) {
+        lastCheckedTimestamp = millis();
+
+
         bool res = getUserInfo(getApiToken(), &userInfo);
         if (!res) {
+            Serial.println("Failed to get user info");
             return;
         }
         max_page_num = userInfo.total_pages;
 
-        lastCheckedTimestamp = millis();
 
         Serial.print(".");
 

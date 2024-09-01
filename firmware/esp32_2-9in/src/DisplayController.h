@@ -11,6 +11,7 @@
 #include <DisplayDefinitions.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 
+
 #define SIDEBAR_WIDTH 25
 #define SIDEBAR_ROUND 2
 

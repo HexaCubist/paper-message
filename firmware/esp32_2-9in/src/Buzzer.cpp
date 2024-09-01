@@ -4,7 +4,7 @@
 #define SOUND_PWM_CHANNEL   0
 #define SOUND_RESOLUTION    8 // 8 bit resolution
 #define SOUND_ON            (1<<(SOUND_RESOLUTION-1)) // 50% duty cycle
-#define SOUND_ON_QUIET            (1<<(SOUND_RESOLUTION-6)) // 50% duty cycle
+#define SOUND_ON_QUIET            (1<<(SOUND_RESOLUTION-5)) // Low duty cycle
 #define SOUND_OFF           0                         // 0% duty cycle
 
 
@@ -36,11 +36,13 @@ void playStartupTune(bool successful) {
         delay(100);
         playTone(TONE_HIGH_FREQ, 100);
     } else {
-        playTone(TONE_HIGH_FREQ, 100);
+        // Error code should always be audible
+
+        playTone(TONE_HIGH_FREQ, 100, SOUND_ON);
         delay(100);
-        playTone(TONE_BASE_FREQ, 100);
+        playTone(TONE_BASE_FREQ, 100, SOUND_ON);
         delay(100);
-        playTone(TONE_BASE_FREQ, 200);
+        playTone(TONE_BASE_FREQ, 200, SOUND_ON);
 
     }
 
@@ -50,10 +52,14 @@ void playInputFeedback() {
 }
 
 void playTone(int freq, int ms) {
+    playTone(freq, ms, SOUND_ON_QUIET);
+}
+
+void playTone(int freq, int ms, uint32_t volume_profile) {
     if (!buzzer_enabled) {return;}
 
     ledcChangeFrequency(SOUND_PWM_CHANNEL, freq, SOUND_RESOLUTION);
-    ledcWrite(SOUND_PWM_CHANNEL, SOUND_ON_QUIET);
+    ledcWrite(SOUND_PWM_CHANNEL, volume_profile);
     delay(50);
     ledcWrite(SOUND_PWM_CHANNEL, SOUND_OFF);
 }
