@@ -293,7 +293,7 @@
                       <td>{user.messages}</td>
                       <td>
                         <button
-                          class="btn"
+                          class="btn btn-sm"
                           onclick={async () => {
                             const newName = prompt(
                               `What would you like to change ${user.name}'s name to?`,
@@ -314,6 +314,47 @@
                           }}
                         >
                           Rename
+                        </button>
+                        <button
+                          class="btn btn-sm"
+                          onclick={async () => {
+                            const newStreak = prompt(
+                              `What would you like to change ${user.name}'s streaks to?`,
+                              user.current_streak.toString() ?? ""
+                            );
+                            if (!newStreak || isNaN(parseInt(newStreak)))
+                              return;
+                            const setDate = prompt(
+                              'When would you like to set the reset date to? NOW or a specific date (YYYY-MM-DD)',
+                              moment(user.last_streak_day).format("YYYY-MM-DD")
+                            );
+                            let parsedDate: moment.Moment;
+                            if(setDate === 'NOW') {
+                              parsedDate = moment();
+                            } else {
+                              parsedDate = moment(setDate, 'YYYY-MM-DD');
+                            }
+                            if(!parsedDate.isValid()) {
+                              alert('Invalid date');
+                              return;
+                            }
+                            const res = await fetch(
+                              `/api/admin/user/${user.id}`,
+                              {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                  current_streak: parseInt(newStreak),
+                                  reset_date: parsedDate.toISOString(),
+                                }),
+                              }
+                            );
+                            if (res.ok) window.location.reload();
+                          }}
+                        >
+                          Set Streaks
                         </button>
                       </td>
                     </tr>{/each}

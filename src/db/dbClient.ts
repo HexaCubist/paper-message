@@ -47,6 +47,9 @@ export const getAllUsers = async () => {
       name: true,
       email: true,
       image: true,
+      current_streak: true,
+      highest_streak: true,
+      last_streak_day: true,
     },
     with: {
       messages: {
@@ -59,6 +62,11 @@ export const getAllUsers = async () => {
   return users.map((u) => ({
     ...u,
     messages: u.messages.length,
+    current_streak: moment()
+      .subtract(1, "day")
+      .isSameOrBefore(u.last_streak_day, "day")
+      ? u.current_streak
+      : 0,
   }));
 };
 
@@ -207,6 +215,21 @@ export const changeUserName = async (userID: string, newName: string) => {
     .update(schema.users)
     .set({
       name: newName,
+    })
+    .where(eq(schema.users.id, userID));
+};
+
+// Admin: Change current streak
+export const changeCurrentStreak = async (
+  userID: string,
+  newStreak: number,
+  setDate: string = moment().toISOString()
+) => {
+  await db
+    .update(schema.users)
+    .set({
+      current_streak: newStreak,
+      ...(setDate ? { last_streak_day: moment(setDate).toDate() } : {}),
     })
     .where(eq(schema.users.id, userID));
 };
