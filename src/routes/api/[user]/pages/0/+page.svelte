@@ -9,7 +9,7 @@
 </script>
 
 {#if data.messages.length}
-  <h1 class="h-full flex text-center gap-[8px] justify-center">
+  <h1 class="h-full flex text-center gap-[8px]">
     <img src="/logo-colour-bw-min.png" alt="Royal Society of Besties" />
     <div class="h-full flex flex-col justify-center text-left">
       <p class="daydream">New Message{data.messages.length > 1 ? "s" : ""}!</p>

@@ -13,20 +13,26 @@ body {
   font-style: normal;
 }
 
+p {
+  margin-left: -0.13em;
+}
+
 .daydream {
   font-family: Daydream, "Noto Emoji", sans-serif;
-  font-size: 11px;
+  --base-size: 10.9px;
+  font-size: var(--base-size);
   line-height: 14px;
+  margin-left: -0.04em;
   &.daydream-lg {
-    font-size: 22px;
+    font-size: calc(var(--base-size) * 2);
     line-height: 33px;
   }
   &.daydream-xl {
-    font-size: 33px;
+    font-size: calc(var(--base-size) * 3);
     line-height: 44px;
   }
   &.daydream-2xl {
-    font-size: 44px;
+    font-size: calc(var(--base-size) * 4);
     line-height: 55px;
   }
 }
