@@ -57,6 +57,13 @@
       "when": 1725185036966,
       "tag": "0007_familiar_sasquatch",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1725272637652,
+      "tag": "0008_dry_wrecker",
+      "breakpoints": true
     }
   ]
 }

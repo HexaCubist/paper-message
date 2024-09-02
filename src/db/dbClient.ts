@@ -1,5 +1,5 @@
 import { pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
-import { and, desc, eq, gt, lte } from "drizzle-orm";
+import { and, count, desc, eq, gt, lte, max, min, sql } from "drizzle-orm";
 import { env } from "$env/dynamic/private";
 import postgres from "postgres";
 import * as schema from "./schema";
@@ -109,6 +109,28 @@ export const createMessage = async (
     createdAt: override ? moment().subtract(1, "day").toDate() : undefined,
   });
   console.log("Message created");
+  // See if we need to update streaks
+  const user = await getUser(id);
+  if (user) {
+    // If streak is not today, update streak
+    const lastStreak = user.last_streak_day;
+    const today = moment().startOf("day");
+    if (today.isSame(lastStreak)) return;
+    // If streak is yesterday, add to streak, else reset streak
+    const streakWindow = today.subtract(1, "day");
+    const newStreak = streakWindow.isBefore(lastStreak)
+      ? 1
+      : user.current_streak + 1;
+    // Update streaks
+    await db
+      .update(schema.users)
+      .set({
+        current_streak: newStreak,
+        highest_streak: Math.max(newStreak, user.highest_streak),
+        last_streak_day: today.toDate(),
+      })
+      .where(eq(schema.users.id, id));
+  }
 };
 
 export const editMessage = async (
@@ -146,24 +168,6 @@ process.on("sveltekit:shutdown", async (reason) => {
   await pool.end();
 });
 
-// On server launch, we should also make sure all users have a token
-// This is to ensure that all users can access the API
-// This is a one-time operation
-export const ensureTokens = async () => {
-  const users = await db.query.users.findMany();
-  for (const user of users) {
-    if (!user.deviceToken) {
-      console.log("Creating token for user", user.id);
-      await db
-        .update(schema.users)
-        .set({
-          token: crypto.randomUUID(),
-        })
-        .where(eq(schema.users.id, user.id));
-    }
-  }
-};
-
 // Users list
 export async function userEmailList(
   resultType:
@@ -177,22 +181,19 @@ export async function userEmailList(
           columns: {
             id: true,
           },
-          where: and(
-            gt(
-              schema.messages.createdAt,
-              getLastPostTime().subtract(1, "day").toDate()
-            ),
-            lte(
-              schema.messages.createdAt,
-              APP_MODE === AppModes.LimitArrives
-                ? getLastPostTime().toDate()
-                : new Date()
-            )
-          ),
+          where: gt(schema.messages.createdAt, getLastPostTime().toDate()),
         },
       },
     })
-  ).map(({ messages, ...u }) => ({ ...u, hasSent: messages.length > 0 }));
+  ).map(({ messages, ...u }) => ({
+    ...u,
+    current_streak: moment()
+      .subtract(1, "day")
+      .isSameOrBefore(u.last_streak_day, "day")
+      ? u.current_streak
+      : 0,
+    hasSent: messages.length > 0,
+  }));
   if (Array.isArray(resultType)) {
     return allUsers.map((u) => resultType.map((r) => u[r]));
   } else {
@@ -208,4 +209,22 @@ export const changeUserName = async (userID: string, newName: string) => {
       name: newName,
     })
     .where(eq(schema.users.id, userID));
+};
+
+// On server launch, we should also make sure all users have a token
+// This is to ensure that all users can access the API
+// This is a one-time operation
+export const ensureTokens = async () => {
+  const users = await db.query.users.findMany();
+  for (const user of users) {
+    if (!user.deviceToken) {
+      console.log("Creating token for user", user.id);
+      await db
+        .update(schema.users)
+        .set({
+          deviceToken: crypto.randomUUID(),
+        })
+        .where(eq(schema.users.id, user.id));
+    }
+  }
 };

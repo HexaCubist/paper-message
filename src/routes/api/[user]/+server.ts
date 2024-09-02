@@ -1,6 +1,7 @@
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import type { messageDataType } from "../../../constants";
+import moment from "moment";
 
 const allPages = import.meta.glob("./pages/*/+page.svelte");
 
@@ -11,6 +12,8 @@ export interface userDataType {
   messages?: messageDataType[];
   total_pages: number;
   userID?: string;
+  streak?: number;
+  highest_streak?: number;
 }
 
 export const GET: RequestHandler = ({ url, locals }) => {
@@ -25,5 +28,7 @@ export const GET: RequestHandler = ({ url, locals }) => {
       1 +
       locals.messages.length,
     userID: locals.userID,
+    streak: locals.user.current_streak,
+    highest_streak: locals.user.highest_streak,
   } as userDataType);
 };

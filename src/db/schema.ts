@@ -12,7 +12,7 @@ import {
   customType,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "@auth/core/adapters";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // https://stackoverflow.com/a/76499742
 const bytea = customType<{ data: Buffer; notNull: false; default: false }>({
@@ -32,6 +32,11 @@ export const users = pgTable(
     emailVerified: timestamp("emailVerified", { mode: "date" }),
     image: text("image"),
     deviceToken: uuid("deviceToken").defaultRandom().notNull(),
+    current_streak: integer("current_streak").notNull().default(0),
+    highest_streak: integer("highest_streak").notNull().default(0),
+    last_streak_day: timestamp("last_streak_day", {
+      mode: "date",
+    }).default(sql`to_timestamp(0)`),
   },
   (table) => ({
     tokenIndex: uniqueIndex("token_index").on(table.deviceToken),

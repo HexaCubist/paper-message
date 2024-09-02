@@ -21,6 +21,7 @@ import {
 } from "./constants";
 import { renderHandle } from "$lib/render";
 import normalize from "path-normalize";
+import moment from "moment";
 
 // Run here to prevent build-time execution
 ensureTokens();
@@ -36,6 +37,7 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
   event.locals.role = Role.Guest;
   event.locals.appMode = APP_MODE;
   event.locals.thisTermMessages = [];
+  event.locals.user = undefined;
   //1. Get User from DB
   let id = session?.user?.id;
   let user: userDataType | undefined;
@@ -58,6 +60,16 @@ const userDataHandle: Handle = async ({ event, resolve }) => {
   if (!user || !id) {
     return await resolve(event);
   }
+
+  // Save user to locals
+  event.locals.user = {
+    ...user,
+    current_streak: moment()
+      .subtract(1, "day")
+      .isSameOrBefore(user.last_streak_day, "day")
+      ? user.current_streak
+      : 0,
+  };
 
   //2. Get user ID and role
   event.locals.role =

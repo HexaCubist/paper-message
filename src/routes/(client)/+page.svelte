@@ -202,7 +202,7 @@
     </p>
     <ul class="list-inside mt-2 text-[12px]">
       {#each data.userList as user}
-        <li class="flex items-center mt-3 gap-2">
+        <li class="flex items-center w-full mt-3 gap-2">
           <span
             class="checkbox checkbox-sm"
             aria-hidden="true"
@@ -210,11 +210,18 @@
           ></span>
           <span title="{user[0]} - {user[1] ? 'has posted' : 'has not posted'}">
             {user[0]}
-            <span class="font-sans">
-              {#if user[1]}
-                🎉{/if}
-            </span>
+            {#if user[1]}
+              <span class="font-sans"> 🎉 </span>
+            {/if}
           </span>
+          <div class="grow"></div>
+          {#if user[2]}
+            <!-- Current Streak -->
+            <span class="badge badge-success">
+              {user[2]} day streak
+              <span class="font-sans ml-2"> 🔥 </span>
+            </span>
+          {/if}
         </li>
       {/each}
     </ul>

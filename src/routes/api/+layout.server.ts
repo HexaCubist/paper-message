@@ -1,4 +1,5 @@
 import { env } from "$env/dynamic/public";
+import type { userDataType } from "../../constants";
 import type { LayoutServerLoad } from "./$types";
 import QRCode from "qrcode";
 
@@ -17,6 +18,10 @@ export const load: LayoutServerLoad = async ({
     messageCount: locals.messages.length.toString(),
   });
   return {
+    streak: {
+      current: locals.user.current_streak,
+      highest: locals.user.highest_streak,
+    },
     page: parseInt(page!),
     messages: locals.messages,
     qr: await QRCode.toDataURL(env.PUBLIC_HOST, {

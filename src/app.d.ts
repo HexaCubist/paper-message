@@ -1,5 +1,5 @@
-import type { messageDataType, Role } from "./constants";
-
+import type { messageDataType, userDataType, Role } from "./constants";
+import type moment from "moment";
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare global {
@@ -12,6 +12,7 @@ declare global {
       nextTime: number;
       appMode: AppModes;
       role: Role;
+      user: userDataType;
       thisTermMessages: messageDataType[];
     }
     // interface PageData {}
