@@ -24,7 +24,7 @@ def define_file(file_name):
     var_name = f"IMAGE_{file_name.strip().upper()}"
 
     array_text = array_text[:-1]
-    finalFile = f"#pragma once\nconst unsigned char {var_name}[] = {{\n{array_text}}};"
+    finalFile = f"#pragma once\nconst unsigned char {var_name}[] PROGMEM = {{\n{array_text}}};"
 
     with open(f"{file_name}.h", "w") as f:
         f.write(finalFile)

@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
-#include <GitHubOTA.h>
+#include <ota/GitHubOTA.h>
 
 // This string should correspond to github tag used for Releasing (via. Github Actions)
 

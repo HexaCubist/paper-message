@@ -16,12 +16,10 @@ void saveConfigCallback() {
 }
 
 bool wifiInit(bool force_config) {
-    // if (!EEPROM.begin(512)) {
-    //     Serial.println("Failed to initialise EEPROM");
-    //     return false;
-    // }
-    // String saved_token = EEPROM.readString(0);
-    if (SPIFFS.begin()) {
+
+    // Will format the filesystem if it fails to mount 
+    if (SPIFFS.begin(true)) {
+    
     Serial.println("mounted file system");
     if (SPIFFS.exists("/config.json")) {
       //file exists, reading and loading
@@ -58,6 +56,10 @@ bool wifiInit(bool force_config) {
     }
   } else {
     Serial.println("failed to mount FS");
+    force_config = true;
+  }
+
+  if (strcmp(api_token, "YOUR_API_TOKEN") == 0) {
     force_config = true;
   }
 
