@@ -11,7 +11,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
   const { name, current_streak, reset_date } = await request.json();
   if (name) {
     await changeUserName(user, name);
-  } else if (current_streak) {
+  } else if (current_streak !== undefined) {
     await changeCurrentStreak(user, current_streak, reset_date);
   } else {
     return json({ error: "Missing data" }, { status: 400 });
