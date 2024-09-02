@@ -1,7 +1,4 @@
 <script lang="ts">
-  import FrontFace from "$lib/components/preview/front-face.svelte";
-  import debounce from "debounce";
-  import numConvert from "number-to-words";
   import {
     APP_MODE,
     AppModes,
@@ -17,11 +14,6 @@
   import type { editorData } from "$lib/components/editor/props";
 
   const { data } = $props();
-
-  let previewData = $state({
-    author: data.account?.name!,
-    message: "",
-  });
 
   let editorData: editorData = $state({
     type: data.lastMessage?.image ? "image" : ("text" as any),
@@ -192,39 +184,6 @@
         </div>
       </div>
     </div>
-    <p class="mt-10">
-      <span class="capitalize">
-        {numConvert.toWords(data.userList.length)}
-      </span>
-      folk have logged in and gained access, and {numConvert.toWords(
-        data.userList.filter((u) => u[1]).length
-      )} have sent a message today:
-    </p>
-    <ul class="list-inside mt-2 text-[12px]">
-      {#each data.userList as user}
-        <li class="flex items-center w-full mt-3 gap-2">
-          <span
-            class="checkbox checkbox-sm"
-            aria-hidden="true"
-            aria-checked={user[1]}
-          ></span>
-          <span title="{user[0]} - {user[1] ? 'has posted' : 'has not posted'}">
-            {user[0]}
-            {#if user[1]}
-              <span class="font-sans"> 🎉 </span>
-            {/if}
-          </span>
-          <div class="grow"></div>
-          {#if user[2]}
-            <!-- Current Streak -->
-            <span class="badge badge-success">
-              {user[2]} day streak
-              <span class="font-sans ml-2"> 🔥 </span>
-            </span>
-          {/if}
-        </li>
-      {/each}
-    </ul>
   </form>
   {#if data.role === Role.Admin}
     <!-- Admin section -->
