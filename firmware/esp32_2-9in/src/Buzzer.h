@@ -1,6 +1,12 @@
 #pragma once
 #include <Arduino.h>
 
+static constexpr int BUZZER_OUTPUT = 16; // GPIO16 (P16)
+
+static constexpr int TONE_BASE_FREQ = 1200;
+static constexpr int TONE_HIGH_FREQ = 1600;
+
+
 void setupBuzzer(bool buzzerEnable);
 
 void playStartupTune(bool successful);

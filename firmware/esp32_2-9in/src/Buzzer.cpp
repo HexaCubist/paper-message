@@ -8,10 +8,6 @@
 #define SOUND_OFF           0                         // 0% duty cycle
 
 
-static constexpr int BUZZER_OUTPUT = 16; // GPIO16 (P16)
-
-static constexpr int TONE_BASE_FREQ = 1200;
-static constexpr int TONE_HIGH_FREQ = 1600;
 
 
 bool buzzer_enabled = false;
