@@ -42,19 +42,28 @@ GitHubOTA::GitHubOTA(
 void GitHubOTA::handle()
 {
   const char *TAG = "handle";
-  synchronize_system_time();
 
   String base_url = _fetch_url_via_redirect ?
     get_updated_base_url_via_redirect(_wifi_client, _release_url) :
     get_updated_base_url_via_api(_wifi_client, _release_url);
+    
   ESP_LOGI(TAG, "base_url %s\n", base_url.c_str());
 
   auto last_slash = base_url.lastIndexOf('/', base_url.length() - 2);
   auto semver_str = base_url.substring(last_slash + 1);
   auto _new_version = from_string(semver_str.c_str());
 
-  if (update_required(_new_version, _version))
-  {
+  if (update_required(_new_version, _version)) {
+    Serial.printf("Update required: %d.%d.%d -> %d.%d.%d\n",
+                  _version.major, _version.minor, _version.patch,
+                  _new_version.major, _new_version.minor, _new_version.patch);
+
+    if (!prompt_for_update(semver_str.c_str())) {
+      ESP_LOGI(TAG, "User declined update\n");
+      return;
+    }
+    ESP_LOGI(TAG, "User accepted update\n");
+
     auto result = update_firmware(base_url + _firmware_name);
 
     if (result != HTTP_UPDATE_OK)

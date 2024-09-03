@@ -58,7 +58,6 @@ void setup() {
     // Thus play sad tune :(
     playStartupTune(time_taken > 150);
 
-    prompt_for_update("v0.2.1");
     Serial.println("Initialising Heap Image Loader...");
 
     initialiseImageLoader();

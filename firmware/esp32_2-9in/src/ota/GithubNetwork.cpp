@@ -61,7 +61,7 @@ String get_updated_base_url_via_api(WiFiClientSecure wifi_client, String release
   return base_url;
 }
 
-String get_updated_base_url_via_redirect(WiFiClientSecure wifi_client, String release_url)
+String get_updated_base_url_via_redirect(WiFiClientSecure &wifi_client, String release_url)
 {
   const char *TAG = "get_updated_base_url_via_redirect";
 
@@ -82,41 +82,33 @@ String get_updated_base_url_via_redirect(WiFiClientSecure wifi_client, String re
   return base_url;
 }
 
-String get_redirect_location(WiFiClientSecure wifi_client, String initial_url)
+String get_redirect_location(WiFiClientSecure &wifi_client, String initial_url)
 {
   const char *TAG = "get_redirect_location";
   ESP_LOGV(TAG, "initial_url: %s\n", initial_url.c_str());
 
-  HTTPClient https;
-  https.setFollowRedirects(HTTPC_DISABLE_FOLLOW_REDIRECTS);
+  HTTPClient http;
+  http.setReuse(false);
+  http.setFollowRedirects(HTTPC_DISABLE_FOLLOW_REDIRECTS);
 
-#ifdef ESP8266
-  bool mfln = wifi_client.probeMaxFragmentLength("github.com", 443, 1024);
-  ESP_LOGI(TAG, "MFLN supported: %s\n", mfln ? "yes" : "no");
-  if (mfln) { wifi_client.setBufferSizes(1024, 1024); }
-#endif
 
-  if (!https.begin(wifi_client, initial_url))
+  if (!http.begin(wifi_client, initial_url))
   {
     ESP_LOGE(TAG, "[HTTPS] Unable to connect\n");
     return "";
   }
 
-  int httpCode = https.GET();
-  if (httpCode != HTTP_CODE_FOUND)
-  {
+  int httpCode = http.GET();
+  if (httpCode != HTTP_CODE_FOUND) {
     ESP_LOGE(TAG, "[HTTPS] GET... failed, No redirect\n");
     char errorText[128];
-#ifdef ESP8266
-    int errCode = wifi_client.getLastSSLError(errorText, sizeof(errorText));
-#elif defined(ESP32)
     int errCode = wifi_client.lastError(errorText, sizeof(errorText));
-#endif
+
     ESP_LOGV(TAG, "httpCode: %d, errorCode %d: %s\n", httpCode, errCode, errorText);
   }
 
-  String redirect_url = https.getLocation();
-  https.end();
+  String redirect_url = http.getLocation();
+  http.end();
 
   ESP_LOGV(TAG, "returns: %s\n", redirect_url.c_str());
   return redirect_url;
