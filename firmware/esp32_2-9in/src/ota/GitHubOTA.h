@@ -23,11 +23,7 @@ public:
   void handle();
 
 private:
-#ifdef ESP8266
-  ESP8266HTTPUpdate Updater;
-#elif defined(ESP32)
   HTTPUpdate Updater;
-#endif
 
   HTTPUpdateResult update_firmware(String url);
 
@@ -36,9 +32,6 @@ private:
   String _firmware_name;
   bool _fetch_url_via_redirect;
   WiFiClientSecure _wifi_client;
-#ifdef ESP8266
-  X509List _x509;
-#endif
 };
 
 #endif

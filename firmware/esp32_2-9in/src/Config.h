@@ -14,3 +14,7 @@ static constexpr const char* fp_rawcontent = "EF:A9:7B:6E:EB:B2:31:B9:9B:2E:13:1
 
 static constexpr int display_width = 296;
 static constexpr int display_height = 128;
+
+
+static constexpr int BUTTON_INPUT = 4; // GPIO4 (P4)
+

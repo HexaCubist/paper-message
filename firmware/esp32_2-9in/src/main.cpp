@@ -6,10 +6,8 @@
 #include <soc/rtc_cntl_reg.h>
 #include <ImageLoader.h>
 #include <Buzzer.h>
-
-
-static constexpr int BUTTON_INPUT = 4; // GPIO4 (P4)
-// Bounce2::Button button = Bounce2::Button();
+#include <ota/OTA.h>
+#include <ota/OtaUI.h>
 
 
 
@@ -60,7 +58,7 @@ void setup() {
     // Thus play sad tune :(
     playStartupTune(time_taken > 150);
 
-
+    prompt_for_update("v0.2.1");
     Serial.println("Initialising Heap Image Loader...");
 
     initialiseImageLoader();
@@ -84,6 +82,11 @@ void setup() {
     setClock();
 
     Serial.printf("Heap available memory:     %8d bytes\n", ESP.getFreeHeap());
+    
+    Serial.println("Checking for updates...");
+    OTA_Initialise();
+
+
 
     Serial.println("Getting user info...");
 

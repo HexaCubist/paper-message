@@ -14,6 +14,7 @@
 
 #define SIDEBAR_WIDTH 25
 #define SIDEBAR_ROUND 2
+#define PAGE_PADDING 2
 
 
 enum UpdateMode {

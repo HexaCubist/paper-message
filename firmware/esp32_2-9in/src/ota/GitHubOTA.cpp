@@ -12,7 +12,8 @@
 #include <ArduinoJson.h>
 #include "semver_extensions.h"
 #include "GitHubOTA.h"
-#include "common.h"
+#include "GithubNetwork.h"
+#include "OtaUI.h"
 
 GitHubOTA::GitHubOTA(
     String version,
@@ -29,16 +30,8 @@ GitHubOTA::GitHubOTA(
   _fetch_url_via_redirect = fetch_url_via_redirect;
 
   Updater.rebootOnUpdate(false);
-#ifdef ESP8266
-  _x509.append(github_certificate);
-  _wifi_client.setTrustAnchors(&_x509);
-#elif defined(ESP32)
-  _wifi_client.setCACert(github_certificate);
-#endif
+  _wifi_client.setInsecure();
 
-#ifdef LED_BUILTIN
-  Updater.setLedPin(LED_BUILTIN, LOW);
-#endif
   Updater.onStart(update_started);
   Updater.onEnd(update_finished);
   Updater.onProgress(update_progress);

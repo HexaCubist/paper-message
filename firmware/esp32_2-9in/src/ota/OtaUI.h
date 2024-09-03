@@ -1,16 +1,18 @@
 #pragma once
 
 #include <Arduino.h>
-#include <WiFi.h>
-#include <ota/GitHubOTA.h>
+#include <DisplayController.h>
+#include <images/updateavailable.h>
+#include <images/updatedownloading.h>
+#include <images/updatecomplete.h>
 
-// This string should correspond to github tag used for Releasing (via. Github Actions)
 
-// Replace your_username/your_repo with your values (ex. axcap/Esp-GitHub-OTA)
-// This is a link to repo where your firmware updates will be pulled from
-// #define RELEASE_URL "https://api.github.com/repos/your_username/your_repo/releases/latest"
+#include <Config.h>
+#include <Buzzer.h>
 
-// Use this version of the URL together with init_ota(VERSION, true) under debugging
-// to spare yourself from getting timeout from GitHub API
-#define RELEASE_URL "https://github.com/HexaCubist/paper-message/releases/latest"
+void update_started();
+void update_finished();
+void update_progress(int currentlyReceiced, int totalBytes);
+void update_error(int err);
 
+bool prompt_for_update(char* version_text);

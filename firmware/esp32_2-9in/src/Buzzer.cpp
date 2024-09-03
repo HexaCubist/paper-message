@@ -63,3 +63,11 @@ void playTone(int freq, int ms, uint32_t volume_profile) {
     delay(50);
     ledcWrite(SOUND_PWM_CHANNEL, SOUND_OFF);
 }
+
+void playUpdateAvailableTune() {
+    playTone(TONE_BASE_FREQ, 100, SOUND_ON);
+    delay(100);
+    playTone(TONE_HIGH_FREQ, 100, SOUND_ON);
+    delay(100);
+    playTone(TONE_HIGH_FREQ, 200, SOUND_ON);
+}
